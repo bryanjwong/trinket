@@ -1,0 +1,111 @@
+[
+  {
+    "name": "Walk 5000 steps",
+    "type": "ge",
+    "metric": "steps",
+    "current": 0,
+    "goal": 5000,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Walk 1500 steps",
+    "type": "ge",
+    "metric": "steps",
+    "current": 0,
+    "goal": 1000,
+    "reward": {
+      "type": "exp",
+      "value": 1000
+    }
+  },
+
+  {
+    "name": "Walk 500 steps at night",
+    "type": "ge",
+    "metric": "steps",
+    "rules": {
+      "time": "night"
+    },
+    "current": 0,
+    "goal": 500,
+    "reward": {
+      "type": "exp",
+      "value": 500
+    }
+  },
+
+  {
+    "name": "Walk 500 steps in the day",
+    "type": "ge",
+    "metric": "steps",
+    "rules": {
+      "time": "day"
+    },
+    "current": 0,
+    "goal": 500,
+    "reward": {
+      "type": "exp",
+      "value": 500
+    }
+  },
+
+  {
+    "name": "Reach a maximum altitude of at least 500ft",
+    "type": "ge",
+    "metric": "altitude",
+    "current": 0,
+    "goal": 500,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Reach a max temperature of at least 80F",
+    "type": "ge",
+    "metric": "temperature",
+    "current": 0,
+    "goal": 80,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Reach a min temperature of at least 50F",
+    "type": "le",
+    "metric": "temperature",
+    "current": 200,
+    "goal": 50,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Go on an uninterrupted walk for 30 minutes",
+    "type": "ge",
+    "metric": "duration",
+    "current": 0,
+    "goal": 30,
+    "reward": {
+      "type": "exp",
+      "value": 750
+    }
+  },
+
+  {
+    "name": "Go on an uninterrupted walk for 60 minutes",
+    "type": "ge",
+    "metric": "duration",
+    "current": 0,
+    "goal": 60,
+    "reward": {
+      "type": "exp",
+      "value": 1500
+    }
+  }
+]
