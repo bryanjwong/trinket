@@ -1,10 +1,10 @@
 [
   {
     "name": "Walk 5000 steps",
-    "type": "ge",
-    "metric": "steps",
-    "current": 0,
-    "goal": 5000,
+    "goal": "ge",
+    "field": "TOTAL_STEPS",
+    "currVal": 0,
+    "goalVal": 5000,
     "reward": {
       "type": "trinket"
     }
@@ -12,10 +12,10 @@
 
   {
     "name": "Walk 1500 steps",
-    "type": "ge",
-    "metric": "steps",
-    "current": 0,
-    "goal": 1000,
+    "goal": "ge",
+    "field": "TOTAL_STEPS",
+    "currVal": 0,
+    "goalVal": 1000,
     "reward": {
       "type": "exp",
       "value": 1000
@@ -24,13 +24,13 @@
 
   {
     "name": "Walk 500 steps at night",
-    "type": "ge",
-    "metric": "steps",
-    "rules": {
-      "time": "night"
-    },
-    "current": 0,
-    "goal": 500,
+    "goal": "ge",
+    "field": "TOTAL_STEPS",
+    "rule": "time",
+    "hourLow": 18,
+    "hourHigh": 24,
+    "currVal": 0,
+    "goalVal": 500,
     "reward": {
       "type": "exp",
       "value": 500
@@ -39,13 +39,13 @@
 
   {
     "name": "Walk 500 steps in the day",
-    "type": "ge",
-    "metric": "steps",
-    "rules": {
-      "time": "day"
-    },
-    "current": 0,
-    "goal": 500,
+    "goal": "ge",
+    "field": "TOTAL_STEPS",
+    "rule": "time",
+    "hourLow": 8,
+    "hourHigh": 18,
+    "currVal": 0,
+    "goalVal": 500,
     "reward": {
       "type": "exp",
       "value": 500
@@ -54,32 +54,45 @@
 
   {
     "name": "Reach a maximum altitude of at least 500ft",
-    "type": "ge",
-    "metric": "altitude",
-    "current": 0,
-    "goal": 500,
+    "goal": "ge",
+    "field": "ACTIVITY_ALTITUDE_REACH",
+    "currVal": 0,
+    "goalVal": 500,
+    "reward": {
+      "type": "exp",
+      "value": 500
+    }
+  },
+
+  {
+    "name": "Reach a maximum altitude of at least 750ft",
+    "goal": "ge",
+    "field": "ACTIVITY_ALTITUDE_REACH",
+    "currVal": 0,
+    "goalVal": 750,
     "reward": {
       "type": "trinket"
     }
   },
 
   {
-    "name": "Reach a max temperature of at least 80F",
-    "type": "ge",
-    "metric": "temperature",
-    "current": 0,
-    "goal": 80,
+    "name": "Achieve an altitude gain of 200ft",
+    "goal": "ge",
+    "field": "ACTIVITY_ALTITUDE_GAIN",
+    "currVal": 0,
+    "goalVal": 200,
     "reward": {
-      "type": "trinket"
+      "type": "exp",
+      "value": 500
     }
   },
 
   {
-    "name": "Reach a min temperature of at least 50F",
-    "type": "le",
-    "metric": "temperature",
-    "current": 200,
-    "goal": 50,
+    "name": "Achieve an altitude gain of 400ft",
+    "goal": "ge",
+    "field": "ACTIVITY_ALTITUDE_GAIN",
+    "currVal": 0,
+    "goalVal": 400,
     "reward": {
       "type": "trinket"
     }
@@ -87,10 +100,10 @@
 
   {
     "name": "Go on an uninterrupted walk for 30 minutes",
-    "type": "ge",
-    "metric": "duration",
-    "current": 0,
-    "goal": 30,
+    "goal": "ge",
+    "field": "ACTIVITY_DURATION",
+    "currVal": 0,
+    "goalVal": 30,
     "reward": {
       "type": "exp",
       "value": 750
@@ -99,13 +112,75 @@
 
   {
     "name": "Go on an uninterrupted walk for 60 minutes",
-    "type": "ge",
-    "metric": "duration",
-    "current": 0,
-    "goal": 60,
+    "goal": "ge",
+    "field": "ACTIVITY_DURATION",
+    "currVal": 0,
+    "goalVal": 60,
     "reward": {
       "type": "exp",
       "value": 1500
+    }
+  },
+
+  {
+    "name": "Walk 1000 steps on the weekend",
+    "goal": "ge",
+    "field": "TOTAL_STEPS",
+    "rule": "day",
+    "day": "SU",
+    "currVal": 0,
+    "goalVal": 1000,
+    "reward": {
+      "type": "exp",
+      "value": 1500
+    }
+  },
+
+  {
+    "name": "Walk 1000 steps on a weekday",
+    "goal": "ge",
+    "field": "TOTAL_STEPS",
+    "rule": "day",
+    "day": "MTWRF",
+    "currVal": 0,
+    "goalVal": 1000,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Walk a distance of 0.5 miles",
+    "goal": "ge",
+    "field": "TOTAL_DISTANCE",
+    "currVal": 0,
+    "goalVal": 0.5,
+    "reward": {
+      "type": "exp",
+      "value": 500
+    }
+  },
+
+  {
+    "name": "Walk a distance of 1 mile",
+    "goal": "ge",
+    "field": "TOTAL_DISTANCE",
+    "currVal": 0,
+    "goalVal": 1,
+    "reward": {
+      "type": "exp",
+      "value": 1000
+    }
+  },
+
+  {
+    "name": "Walk a distance of 2.5 miles",
+    "goal": "ge",
+    "field": "TOTAL_DISTANCE",
+    "currVal": 0,
+    "goalVal": 2.5,
+    "reward": {
+      "type": "trinket"
     }
   }
 ]
