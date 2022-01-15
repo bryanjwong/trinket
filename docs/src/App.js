@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Navbar from './components/Navbar';
 import Collection from './components/Collection';
+import Objectives from './components/Objectives';
 import './App.css';
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
       case 0:
         return (<Collection/>);
       case 1:
-        return (<p>Objectives</p>);
+        return (<Objectives/>);
       case 2:
         return (<p>Map</p>);
     }

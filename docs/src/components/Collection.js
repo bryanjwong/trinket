@@ -5,6 +5,7 @@ import Paper from '@mui/material/Paper';
 import Grid from "@material-ui/core/Grid";
 import peb from '../images/peb_1.png';
 import { Typography } from "@mui/material";
+import {Button} from "@mui/material";
 
 const useStyles = makeStyles({
   activeTrinket: {
@@ -23,6 +24,12 @@ const useStyles = makeStyles({
   altTrinkets: {
     width: "60%",
     borderRadius: "2.5px"
+  },
+  gridwrapper: {
+    border: "40px solid grey",
+    backgroundColor: "grey",
+    borderRadius: "25px",
+
   }
 });
 
@@ -38,16 +45,18 @@ function Collection() {
 
   return (
     <Box display="flex" width="90vw">
-      <Grid container spacing={2}>
+      <Grid container spacing={8}>
+        {/* Header Title */}
         <Grid item lg={6} >
           <Typography variant="h1" class={classes.title}>My Collection</Typography>
         </Grid>
         <Grid item lg={6}></Grid>
+        {/* Active Trinket Image */}
         <Grid item lg={4}>
           <img src={peb} class={classes.activeTrinket}/>
         </Grid>
         {/* Adding the the current Trinket Description and stats */}
-        <Grid item lg={2}>
+        <Grid item lg={2} class={classes.gridwrapper}>
           <span>&nbsp;</span>
           <Typography variant="h3">PEB</Typography>
           <span>&nbsp;</span>
@@ -60,10 +69,27 @@ function Collection() {
           <Typography class={classes.fields}>Hikes Completed</Typography>
           <Typography>4</Typography>
         </Grid>
+        {/* Alternate Trinkets */}
         <Grid item lg ={2}>
-          <img src={peb} class={classes.altTrinkets}></img>
-          <img src={peb} class={classes.altTrinkets}></img>
-          <img src={peb} class={classes.altTrinkets}></img>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+          <span>&nbsp;</span>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+          <span>&nbsp;</span>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+        </Grid>
+        <Grid item lg ={2}>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+          <span>&nbsp;</span>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+          <span>&nbsp;</span>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+        </Grid>
+        <Grid item lg ={2}>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+          <span>&nbsp;</span>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
+          <span>&nbsp;</span>
+          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
         </Grid>
       </Grid>
     </Box>
