@@ -4,11 +4,23 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 
 const objectives = require('./objectives.json'); 
+const trinkets = require('./trinkets.json'); 
 
 function getRandomObjective() {
   var obj = objectives[Math.floor(Math.random()*objectives.length)];
   obj["completed"] = false;
   return obj;
+}
+
+function getRandomTrinket(trinketId) {
+  var trinket = trinkets[Math.floor(Math.random()*trinkets.length)];
+  trinket["trinketId"] = trinketId;
+  trinket["currExp"] = 0;
+  trinket["level"] = 1;
+  trinket["evolveLevel"] = 1;
+  trinket["totalSteps"] = 0;
+  trinket["totalDuration"] = 0;
+  return trinket;
 }
 
 exports.handleObjWrite = functions.database.ref("/users/{usr}/objectives/{obj}/")
@@ -24,12 +36,32 @@ exports.handleObjWrite = functions.database.ref("/users/{usr}/objectives/{obj}/"
       functions.logger.log(context.params.obj, "completed");
       obj["completion_time"] = Date.now();
       
-      // Handle reward
+      // Handle rewards
       const reward = obj["reward"];
       if (reward["type"] === "exp") {
         promises.push(admin.database()
-                            .ref("/users/"+context.params.usr+"/active_trinket/currExp")
-                            .set(admin.database.ServerValue.increment(reward["value"])));
+                           .ref("/users/"+context.params.usr+"/active_trinket/currExp")
+                           .set(admin.database.ServerValue.increment(reward["value"])));
+      }
+      if (reward["type"] === "trinket") {
+        promises.push(
+          admin.database()
+               .ref("/users/"+context.params.usr+"/consts/trinketId")
+               .once("value")
+               .then((snapshot) => {
+                 var trinketId = snapshot.val();
+                 functions.logger.log("snapshot", snapshot);
+                 functions.logger.log("trinketId", trinketId);
+                 return admin.database()
+                             .ref("/users/"+context.params.usr+"/collection/")
+                             .push(getRandomTrinket(trinketId))
+               })
+               .then((snapshot) => {
+                 return admin.database()
+                             .ref("/users/"+context.params.usr+"/consts/trinketId")
+                             .set(admin.database.ServerValue.increment(1))
+               })
+        );
       }
 
       // Copy completed objective to completed objectives list
@@ -55,7 +87,7 @@ exports.handleTrinketLevelUp = functions.database.ref("/users/{usr}/active_trink
   .onWrite((change, context) => {
     var obj = change.after.val();
     if (obj["currExp"] < obj["goalExp"]) return;
-    
+
     while (obj["currExp"] >= obj["goalExp"]) {
       obj["currExp"] -= obj["goalExp"];
       obj["level"]++;

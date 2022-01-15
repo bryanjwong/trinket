@@ -1,0 +1,25 @@
+[
+  {
+    "speciesId": 0,
+    "name1": "Peb",
+    "name2": "Stacky",
+    "name3": "Mont",
+    "goalExp": 1000
+  },
+
+  {
+    "speciesId": 1,
+    "name1": "Lef",
+    "name2": "Tuft",
+    "name3": "Bushy",
+    "goalExp": 1000
+  },
+
+  {
+    "speciesId": 2,
+    "name1": "Drip",
+    "name2": "Pudd",
+    "name3": "Fallsy",
+    "goalExp": 1000
+  }
+]
