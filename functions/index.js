@@ -39,9 +39,17 @@ exports.handleObjWrite = functions.database.ref("/users/{usr}/objectives/{obj}/"
       // Handle rewards
       const reward = obj["reward"];
       if (reward["type"] === "exp") {
-        promises.push(admin.database()
-                           .ref("/users/"+context.params.usr+"/active_trinket/currExp")
-                           .set(admin.database.ServerValue.increment(reward["value"])));
+        promises.push(
+          admin.database()
+               .ref("/users/"+context.params.usr+"/consts/activeId")
+               .once("value")
+               .then((snapshot) => {
+                 var activeId = snapshot.val();
+                 admin.database()
+                      .ref("/users/"+context.params.usr+"/trinkets/"+activeId+"/currExp")
+                      .set(admin.database.ServerValue.increment(reward["value"]))
+               })
+        ); 
       }
       if (reward["type"] === "trinket") {
         promises.push(
@@ -53,8 +61,9 @@ exports.handleObjWrite = functions.database.ref("/users/{usr}/objectives/{obj}/"
                  functions.logger.log("snapshot", snapshot);
                  functions.logger.log("trinketId", trinketId);
                  return admin.database()
-                             .ref("/users/"+context.params.usr+"/collection/")
-                             .push(getRandomTrinket(trinketId))
+                             .ref("/users/"+context.params.usr+"/trinkets/")
+                             .child(trinketId)
+                             .set(getRandomTrinket(trinketId))
                })
                .then((snapshot) => {
                  return admin.database()
@@ -83,7 +92,7 @@ exports.getNewObjs = functions.database.ref("/users/{usr}/objectives")
     return Promise.all(promises);
   });
 
-exports.handleTrinketLevelUp = functions.database.ref("/users/{usr}/active_trinket/")
+exports.handleTrinketLevelUp = functions.database.ref("/users/{usr}/trinkets/{tid}")
   .onWrite((change, context) => {
     var obj = change.after.val();
     if (obj["currExp"] < obj["goalExp"]) return;
@@ -95,5 +104,8 @@ exports.handleTrinketLevelUp = functions.database.ref("/users/{usr}/active_trink
         obj["evolveLevel"]++;
       }
     }
-    return admin.database().ref("/users/"+context.params.usr+"/active_trinket/").set(obj);
+    return change.after.ref.set(obj);
+    // return admin.database().ref("/users/"+context.params.usr+"/active_trinket/").set(obj);
   });
+
+exports.swapActive
