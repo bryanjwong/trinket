@@ -8,7 +8,7 @@ function App() {
   // Use this to change current Page View State
   const [pageState, setPageState] = React.useState(0);
   const pages = ['Collection', 'Objectives', 'Map'];
-
+  
   // Use pageState to render corresponding page
   function renderPage(pageId) {
     switch(pageId) {
