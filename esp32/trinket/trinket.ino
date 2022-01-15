@@ -2,21 +2,52 @@
 #include <FirebaseESP32.h>
 #include <HardwareSerial.h>
 #include <TinyGPSPlus.h>
+#include <math.h>
+#include <SPI.h>
+#include <SD.h>
+
 
 #define FIREBASE_HOST "https://trinket-ideahacks-default-rtdb.firebaseio.com/"
 #define FIREBASE_AUTH "I44ivk8FBivPIvMjlRtTWYH8J9MJ06ye8Q72jzAG"
+#define FIREBASE_ACTIVITY_PATH "/activities/"
+#define FIREBASE_OBJECTIVES_PATH "/objectives/"
 #define WIFI_SSID "CalebAndroid"
 #define WIFI_PASSWORD "wxai8878"
+#define OBJECTIVES_FILE "objectives.txt"
+#define NUM_OBJECTIVES 3
+#define NUM_OBJECTIVES_FIELDS 10
+#define SD_MOSI 0
+#define SD_MISO 0
+#define SD_CLK 0
+#define SD_CS 0
+#define SD_BASEFILE  "activity_names.txt"
+
 
 FirebaseData firebaseData;
 HardwareSerial gpsSerial(2);
 TinyGPSPlus gps;
 
+struct Objective{
+  String m_name;
+  String m_rule; //time, day
+  String m_day; //select one or more from MTWHFSU
+  int m_hourLow; 
+  int m_hourHigh;
+  bool m_complete; 
+  String m_field; //steps, altitude, temperature, duration, distance
+  String m_goalCmp; //ge, le
+  float m_goalVal;
+  float m_currVal;
+};
+
 void displayInfo();
 void setup_WIFI();
 void setup_firebase();
 void turnoff_firebase();
-
+void do_activity();
+void sync();
+double calc_distance(double lat, double lng, double prev_lat, double prev_lng);
+bool read_objectives(String filename, Objective *objectives);
 
 void setup() {
   // put your setup code here, to run once:   
@@ -115,4 +146,282 @@ void setup_firebase(){
 void turnoff_firebase(){
   Firebase.end(firebaseData);
   Serial.println("Stopped Firebase");
+}
+
+void do_activity(){
+  
+  Objective objectives [NUM_OBJECTIVES];
+  bool hasObjectives = read_objectives(OBJECTIVES_FILE, objectives);
+  double distance = 0; //distance in miles
+  int steps = 0; //steps taken
+  int duration = 0; //seconds
+  int hour;
+  int minutes;
+  int seconds;
+
+  File activityFile, baseFile;
+  
+  //set initial values
+  double start_alt = -1;
+  double prev_lat = -1;
+  double prev_lng = -1;
+  float prev_alt = -1;
+  float currSpeed = 0; 
+  unsigned long prev_reading = millis();
+
+  while (1){
+      
+  }
+  
+  if (!SD.begin(SD_CS))
+    Serial.println("SD initialization failed!");
+
+  String activityName = String(gps.date.year());
+  activityName += "-" + gps.date.month();
+  activityName += "-" + gps.date.day();
+  activityName += "-" + gps.time.hour();
+  activityName += "-" + gps.time.minute();
+  activityName += "-" + gps.time.second();
+  activityName += ".csv";
+  
+
+  baseFile = SD.open(SD_BASEFILE, FILE_WRITE);
+  baseFile.print(activityName + ",");
+  baseFile.close();
+
+  activityFile = SD.open(activityName, FILE_WRITE);
+  
+  while (true){
+    //main activity loop
+    
+
+    //check for step update
+    bool stepped = false;
+    //check if step occured
+
+    
+    
+    bool measurement = false; 
+    while (gpsSerial.available() > 0){
+      if (gps.encode(gpsSerial.read())){
+        unsigned long curr = millis();
+  
+        if (curr - prev_reading >= 1000){
+          //read and log data
+          double lat = gps.location.lat();
+          double lng = gps.location.lng();
+          double alt = gps.altitude.miles();
+          
+          double distanceMoved = calc_distance(lat, lng, prev_lat, prev_lng);
+          distanceMoved = sqrt(pow(distanceMoved,2) + pow(alt - prev_alt,2));
+          distance += distanceMoved;
+
+          currSpeed = gps.speed.mph();          
+          
+          String nowString = String(gps.date.year());
+          nowString += "-" + gps.date.month();
+          nowString += "-" + gps.date.day();
+          nowString += "-" + gps.time.hour();
+          nowString += "-" + gps.time.minute();
+          nowString += "-" + gps.time.second();
+
+          activityFile.print(nowString + ",");
+          activityFile.print(String(lat) + ",");
+          activityFile.print(String(lng) + ",");
+          activityFile.print(String(distance) + ",");
+          activityFile.print(String(alt) + ",");
+          activityFile.print(String(currSpeed) + ",");
+          activityFile.print(steps);
+          
+          
+          prev_lat = lat;
+          prev_lng = lng;
+          prev_alt = alt;
+          prev_reading = curr;
+        }
+        
+      }
+    }
+
+     //check for button press to update screen
+    bool changeScreen = false;
+
+    //check if hit objective
+    bool hitObjective = false;
+    if(hasObjectives && (stepped || measurement)){
+      write_objectives(OBJECTIVES_FILE, objectives);
+    }
+    
+    if (hitObjective){
+      //show some fun screen for hitting objective
+    }
+    else if (stepped || measurement || changeScreen){
+      //update screen  
+      
+    }  
+  } 
+}
+
+double calc_distance(double lat1, double long1, double lat2, double long2)
+{
+    double d2r = PI / 180.0;
+    
+    double dlong = (long2 - long1) * d2r;
+    double dlat = (lat2 - lat1) * d2r;
+    double a = pow(sin(dlat/2.0), 2) + cos(lat1*d2r) * cos(lat2*d2r) * pow(sin(dlong/2.0), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+    double d = 3956 * c; 
+
+    return d;
+}
+void sync(){
+  //write pending activities
+  if (SD.exists(SD_BASEFILE)){
+    File baseFile = SD.open(SD_BASEFILE, FILE_READ);
+    
+    String str;
+    while (baseFile.available())
+      str += baseFile.read();
+  
+    baseFile.close();
+    SD.remove(SD_BASEFILE);
+  
+    int left = 0;
+    int right = 0;
+    while (left < str.length()){
+      if (str[right] == ','){
+        String activityName = str.substring(left,right);
+        left = right++;
+        if (SD.exists(activityName)){
+          File activityFile = SD.open(activityName, FILE_READ);
+          String activityStr;
+          while (activityFile.available())
+            activityStr += activityFile.read();
+          
+          Firebase.setString(firebaseData, FIREBASE_ACTIVITY_PATH + activityName, activityStr);
+        }
+        else
+          Serial.println("File activity to sync does not exist");
+      }
+      else
+        right++;
+    }
+  }
+
+
+  //send completed objectives
+  Objective objectives_old [NUM_OBJECTIVES];
+  if (read_objectives(OBJECTIVES_FILE, objectives_old)){
+    for (int i = 0; i < NUM_OBJECTIVES; i++){
+      String n;
+      Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/name", n);
+      if (n == objectives_old[i].m_name){
+        if (objectives_old[i].m_complete)
+          Firebase.setBool(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/complete", true);
+        else{
+          if (objectives_old[i].m_field == "steps" || objectives_old[i].m_field == "duration" || objectives_old[i].m_field == "distance")
+            Firebase.setFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/currVal", objectives_old[i].m_currVal);       
+        }
+      }
+    }    
+  }
+
+  //give some time for the database to update
+  delay(3000);
+
+  //read new objectives
+  Objective objectives_new [NUM_OBJECTIVES];
+  for (int i = 0; i < NUM_OBJECTIVES; i++){
+    String str;
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/name", str);
+    objectives_new[i].m_name = str;
+    
+    str = "";
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/rule", str);
+    objectives_new[i].m_rule = str;
+    if (str == "day"){
+      str = "";
+      Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/day", str);
+      objectives_new[i].m_day = str;
+    }
+    else if (str == "time"){
+      int t;
+      Firebase.getInt(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/hourLow", t);
+      objectives_new[i].m_hourLow = t;
+      Firebase.getInt(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/hourHigh", t);
+      objectives_new[i].m_hourHigh = t;
+    }
+
+    objectives_new[i].m_complete = false;
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/field", str);
+    objectives_new[i].m_field = str;
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/goalCmp", str);
+    objectives_new[i].m_goalCmp = str;
+    float f;
+    Firebase.getFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/goalVal", f);
+    objectives_new[i].m_goalVal = f;
+    Firebase.getFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/currVal", f);
+    objectives_new[i].m_currVal = f;
+  }
+
+  write_objectives(OBJECTIVES_FILE, objectives_new);
+  
+}
+
+bool read_objectives(String filename, Objective *objectives){
+  if (!SD.exists(filename))
+    return false;
+
+  File objFile = SD.open(filename, FILE_READ);
+
+  String str;
+  while (objFile.available())
+    str += objFile.read();
+    
+
+  String items[NUM_OBJECTIVES*NUM_OBJECTIVES_FIELDS];
+  int index = 0;
+  for(int i = 0; i < NUM_OBJECTIVES*NUM_OBJECTIVES_FIELDS; i++){
+    String s;
+    while (str[index] != ','){
+      s += str[index];
+      index++;
+    }
+    index++;
+  }
+
+  for(int i = 0; i < NUM_OBJECTIVES; i++){
+    objectives[i].m_name = items[i*NUM_OBJECTIVES_FIELDS + 0];
+    objectives[i].m_rule = items[i*NUM_OBJECTIVES_FIELDS + 1];
+    objectives[i].m_day = items[i*NUM_OBJECTIVES_FIELDS + 2];
+    objectives[i].m_hourLow = items[i*NUM_OBJECTIVES_FIELDS + 3].toInt();
+    objectives[i].m_hourHigh = items[i*NUM_OBJECTIVES_FIELDS + 4].toInt();
+    objectives[i].m_complete = items[i*NUM_OBJECTIVES_FIELDS + 5] == "1";
+    objectives[i].m_field = items[i*NUM_OBJECTIVES_FIELDS + 6];
+    objectives[i].m_goalCmp = items[i*NUM_OBJECTIVES_FIELDS + 7];
+    objectives[i].m_goalVal = items[i*NUM_OBJECTIVES_FIELDS + 8].toFloat();
+    objectives[i].m_currVal = items[i*NUM_OBJECTIVES_FIELDS + 9].toFloat();
+  }
+
+  objFile.close();
+  return true;
+}
+
+void write_objectives(String filename, Objective *objectives){
+    SD.remove(filename);
+    File objFile = SD.open(filename, FILE_WRITE);
+
+    for(int i = 0; i < NUM_OBJECTIVES; i++){
+      objFile.print(objectives[i].m_name + ",");
+      objFile.print(objectives[i].m_rule + ",");
+      objFile.print(String(objectives[i].m_day) + ",");
+      objFile.print(String(objectives[i].m_hourHigh) + ",");
+      objFile.print(String(objectives[i].m_complete? 1:0) + ",");
+      objFile.print(objectives[i].m_field + ",");
+      objFile.print(objectives[i].m_goalCmp + ",");
+      objFile.print(String(objectives[i].m_goalVal) + ",");
+      objFile.print(String(objectives[i].m_currVal) + ",");    
+    }
+
+    objFile.close();
 }
