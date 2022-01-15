@@ -48,6 +48,7 @@ void do_activity();
 void sync();
 double calc_distance(double lat, double lng, double prev_lat, double prev_lng);
 bool read_objectives(String filename, Objective *objectives);
+void write_objectives(String filename, Objective *objectives);
 
 void setup() {
   // put your setup code here, to run once:   
@@ -152,38 +153,51 @@ void do_activity(){
   
   Objective objectives [NUM_OBJECTIVES];
   bool hasObjectives = read_objectives(OBJECTIVES_FILE, objectives);
-  double distance = 0; //distance in miles
-  int steps = 0; //steps taken
-  int duration = 0; //seconds
-  int hour;
-  int minutes;
-  int seconds;
 
   File activityFile, baseFile;
-  
-  //set initial values
-  double start_alt = -1;
-  double prev_lat = -1;
-  double prev_lng = -1;
-  float prev_alt = -1;
-  float currSpeed = 0; 
-  unsigned long prev_reading = millis();
 
+  //search for location
+  //TODO display searching for location
+  bool foundLocation = false;
   while (1){
-      
+    delay(500);
+    Serial.println("Searching for location");
+    while (gpsSerial.available() > 0){
+      if (gps.encode(gpsSerial.read()) && gps.location.isValid()){
+        foundLocation = true;
+        //TODO play a little jingle
+        break;
+      }
+    }
   }
+
+  //set initial values
+  double distance = 0; //miles
+  int steps = 0;
+  int duration = 0; //seconds
+  double start_alt = gps.altitude.miles(); //miles
+  double prev_lat = gps.location.lat();
+  double prev_lng = gps.location.lng();
+  float prev_alt = gps.altitude.miles(); //miles
+  float currSpeed = gps.speed.mph(); //mph
+  unsigned long prev_reading = millis();
+  int startYear = gps.date.year();
+  int startMonth = gps.date.month();
+  int startDay = gps.date.day();
+  int startHour = gps.time.hour();
+  int startMinute = gps.time.minute();
+  int startSecond = gps.time.second();
   
   if (!SD.begin(SD_CS))
     Serial.println("SD initialization failed!");
 
   String activityName = String(gps.date.year());
-  activityName += "-" + gps.date.month();
-  activityName += "-" + gps.date.day();
-  activityName += "-" + gps.time.hour();
-  activityName += "-" + gps.time.minute();
-  activityName += "-" + gps.time.second();
+  activityName += "-" + String(gps.date.month());
+  activityName += "-" + String(gps.date.day());
+  activityName += "-" + String(gps.time.hour());
+  activityName += "-" + String(gps.time.minute());
+  activityName += "-" + String(gps.time.second());
   activityName += ".csv";
-  
 
   baseFile = SD.open(SD_BASEFILE, FILE_WRITE);
   baseFile.print(activityName + ",");
@@ -197,8 +211,9 @@ void do_activity(){
 
     //check for step update
     bool stepped = false;
-    //check if step occured
-
+    //TODO read mpu6050
+    if (stepped)
+      steps++;
     
     
     bool measurement = false; 
@@ -206,8 +221,8 @@ void do_activity(){
       if (gps.encode(gpsSerial.read())){
         unsigned long curr = millis();
   
-        if (curr - prev_reading >= 1000){
-          //read and log data
+        if (curr - prev_reading >= 1000){ //read every secondish
+          //read and log activity data
           double lat = gps.location.lat();
           double lng = gps.location.lng();
           double alt = gps.altitude.miles();
@@ -215,24 +230,37 @@ void do_activity(){
           double distanceMoved = calc_distance(lat, lng, prev_lat, prev_lng);
           distanceMoved = sqrt(pow(distanceMoved,2) + pow(alt - prev_alt,2));
           distance += distanceMoved;
+          currSpeed = gps.speed.mph();       
 
-          currSpeed = gps.speed.mph();          
+          int totalSeconds = 0;
+          if (startDay != gps.date.day()) //assume if the days are not equal we crossed midnight
+            totalSeconds = 60*60*24;
+
+          totalSeconds += gps.time.second();
+          totalSeconds += gps.time.minute() * 60;
+          totalSeconds += gps.time.hour() * 60 * 60;
+          totalSeconds -= startSecond;
+          totalSeconds -= startMinute * 60;
+          totalSeconds -= startHour * 60 * 60;
+
+          duration = totalSeconds;
           
           String nowString = String(gps.date.year());
-          nowString += "-" + gps.date.month();
-          nowString += "-" + gps.date.day();
-          nowString += "-" + gps.time.hour();
-          nowString += "-" + gps.time.minute();
-          nowString += "-" + gps.time.second();
+          nowString += "-" + String(gps.date.month());
+          nowString += "-" + String(gps.date.day());
+          nowString += "-" + String(gps.time.hour());
+          nowString += "-" + String(gps.time.minute());
+          nowString += "-" + String(gps.time.second());
 
           activityFile.print(nowString + ",");
+          activityFile.print(String(duration) + ",");
           activityFile.print(String(lat) + ",");
           activityFile.print(String(lng) + ",");
           activityFile.print(String(distance) + ",");
           activityFile.print(String(alt) + ",");
           activityFile.print(String(currSpeed) + ",");
-          activityFile.print(steps);
-          
+          activityFile.print(String(steps));
+          //TODO add temp, humidity
           
           prev_lat = lat;
           prev_lng = lng;
@@ -243,13 +271,50 @@ void do_activity(){
       }
     }
 
-     //check for button press to update screen
+     //check for button press to update screen or finish
     bool changeScreen = false;
+    //make sure to save activity and objectives if finish
 
     //check if hit objective
     bool hitObjective = false;
+    int objectiveNum = 0;
     if(hasObjectives && (stepped || measurement)){
-      write_objectives(OBJECTIVES_FILE, objectives);
+      for (int i = 0; i < NUM_OBJECTIVES; i++){
+        bool fitRule = false;
+        if (objectives[i].m_rule == "day"){
+            String days = objectives[i].m_day; //MTWHFSU
+            //startYear
+            //startMonth
+            //startDay
+            
+        }
+        else if (objectives[i].m_rule == "time"){
+          if (startHour >= objectives[i].m_hourLow && startHour < objectives[i].m_hourHigh)
+            fitRule = true;
+        }
+        else
+          fitRule = true;
+
+        if (fitRule){
+          switch (objectives[i].m_field){
+            case "steps":
+              break;
+            case "altitude":
+              break;
+            case "temperature":
+              break;
+              break;
+            case "duration":
+              break;
+            case "distance":
+            default:
+              break;
+          }
+        }
+      }
+      
+      if (hitObjective)
+        write_objectives(OBJECTIVES_FILE, objectives);
     }
     
     if (hitObjective){
@@ -274,6 +339,7 @@ double calc_distance(double lat1, double long1, double lat2, double long2)
 
     return d;
 }
+
 void sync(){
   //write pending activities
   if (SD.exists(SD_BASEFILE)){
@@ -376,8 +442,7 @@ bool read_objectives(String filename, Objective *objectives){
 
   String str;
   while (objFile.available())
-    str += objFile.read();
-    
+    str += objFile.read();   
 
   String items[NUM_OBJECTIVES*NUM_OBJECTIVES_FIELDS];
   int index = 0;
