@@ -1,5 +1,7 @@
 #include <WiFi.h>
 #include <FirebaseESP32.h>
+#include <HardwareSerial.h>
+#include <TinyGPSPlus.h>
 
 #define FIREBASE_HOST "https://trinket-ideahacks-default-rtdb.firebaseio.com/"
 #define FIREBASE_AUTH "I44ivk8FBivPIvMjlRtTWYH8J9MJ06ye8Q72jzAG"
@@ -7,7 +9,10 @@
 #define WIFI_PASSWORD "wxai8878"
 
 FirebaseData firebaseData;
+HardwareSerial gpsSerial(2);
+TinyGPSPlus gps;
 
+void displayInfo();
 void setup_WIFI();
 void setup_firebase();
 void turnoff_firebase();
@@ -15,7 +20,8 @@ void turnoff_firebase();
 
 void setup() {
   // put your setup code here, to run once:   
-  Serial.begin(115200);
+  Serial.begin(9600);
+  gpsSerial.begin(9600);
   setup_WIFI();
   setup_firebase();
   int test;
@@ -26,6 +32,60 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 
+  while (gpsSerial.available() > 0)
+    if (gps.encode(gpsSerial.read()))
+      displayInfo();
+}
+
+void displayInfo()
+{
+  Serial.print(F("Location: ")); 
+  if (gps.location.isValid())
+  {
+    Serial.print(gps.location.lat(), 6);
+    Serial.print(F(","));
+    Serial.print(gps.location.lng(), 6);
+  }
+  else
+  {
+    Serial.print(F("INVALID"));
+  }
+
+  Serial.print(F("  Date/Time: "));
+  if (gps.date.isValid())
+  {
+    Serial.print(gps.date.month());
+    Serial.print(F("/"));
+    Serial.print(gps.date.day());
+    Serial.print(F("/"));
+    Serial.print(gps.date.year());
+  }
+  else
+  {
+    Serial.print(F("INVALID"));
+  }
+
+  Serial.print(F(" "));
+  if (gps.time.isValid())
+  {
+    if (gps.time.hour() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.hour());
+    Serial.print(F(":"));
+    if (gps.time.minute() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.minute());
+    Serial.print(F(":"));
+    if (gps.time.second() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.second());
+    Serial.print(F("."));
+    if (gps.time.centisecond() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.centisecond());
+  }
+  else
+  {
+    Serial.print(F("INVALID"));
+  }
+
+  Serial.println();
 }
 
 void setup_WIFI(){
