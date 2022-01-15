@@ -105,7 +105,4 @@ exports.handleTrinketLevelUp = functions.database.ref("/users/{usr}/trinkets/{ti
       }
     }
     return change.after.ref.set(obj);
-    // return admin.database().ref("/users/"+context.params.usr+"/active_trinket/").set(obj);
   });
-
-exports.swapActive
