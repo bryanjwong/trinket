@@ -5,6 +5,14 @@
 #include <math.h>
 #include <SPI.h>
 #include <SD.h>
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_Si7021.h>
+#include "hexmaps.h"
+
 
 #define FIREBASE_HOST "https://trinket-ideahacks-default-rtdb.firebaseio.com/"
 #define FIREBASE_AUTH "I44ivk8FBivPIvMjlRtTWYH8J9MJ06ye8Q72jzAG"
@@ -18,14 +26,22 @@
 #define SD_CLK 0
 #define SD_CS 0
 #define SD_BASEFILE  "activity_names.txt"
+#define OLED_RESET -1
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
 
 String USER = "bwong";
 String FIREBASE_ACTIVITY_PATH = "/users/" + USER + "/activities";
 String FIREBASE_OBJECTIVES_PATH = "/users/" + USER + "/objectives/obj";
+int lastPress = 0;
+int currTrinket = TUFT;
 
 FirebaseData firebaseData;
 HardwareSerial gpsSerial(2);
 TinyGPSPlus gps;
+Adafruit_MPU6050 mpu;
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_Si7021 temphumid = Adafruit_Si7021();
 
 struct Objective{
   String m_name;
@@ -56,9 +72,49 @@ void setup() {
   gpsSerial.begin(9600);
   if (!SD.begin(SD_CS))
     Serial.println("SD initialization failed!");
-}
+  
+  if (!mpu.begin()) 
+    Serial.println("Failed to find MPU6050 chip");
+  mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+  mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+  mpu.setFilterBandwidth(MPU6050_BAND_5_HZ);
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))  // Address 0x3D for 128x64
+    Serial.println("SSD1306 allocation failed");
 
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C); 
+}
+int x = 0;
 void loop() {
+  Serial.println(temphumid.readTemperature());
+  Serial.println(temphumid.readHumidity());
+
+  
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+
+  /* Print out the values */
+  Serial.print("Acceleration X: ");
+  Serial.print(a.acceleration.x);
+  Serial.print(", Y: ");
+  Serial.print(a.acceleration.y);
+  Serial.print(", Z: ");
+  Serial.print(a.acceleration.z);
+  Serial.println(" m/s^2");
+
+  Serial.print("Rotation X: ");
+  Serial.print(g.gyro.x);
+  Serial.print(", Y: ");
+  Serial.print(g.gyro.y);
+  Serial.print(", Z: ");
+  Serial.print(g.gyro.z);
+  Serial.println(" rad/s");
+
+  Serial.print("Temperature: ");
+  Serial.print(temp.temperature);
+  Serial.println(" degC");
+
+  Serial.println("");
+  delay(2000);
   // put your main code here, to run repeatedly:
 //
 //  while (gpsSerial.available() > 0)
@@ -66,23 +122,55 @@ void loop() {
 //      displayInfo();
 
 
-  //TODO show main menu
-  //TODO check for button presses
-
-  {
-    //TODO if sync button gets pushed
-    if (WiFi.status() != WL_CONNECTED){
-      setup_WIFI();
-      setup_firebase();
+  display.clearDisplay();
+  display.setTextSize(1);       
+  display.setTextColor(SSD1306_BLACK);
+  display.setCursor(43,0);  
+  display.println(F("Trinkets"));
+  display.setCursor(37,55);  
+  display.println(F("Objectives"));
+  display.setCursor(98,27);
+  display.println(F("Start"));
+  display.setCursor(2,27);
+  display.println(F("Sync"));
+  display.display();
+  delay(200);
+  while(true){
+    if(false) {//left pressed, sync
+      lastPress = millis();
+      if (WiFi.status() != WL_CONNECTED){
+        setup_WIFI();
+        setup_firebase();
+      }  
+      sync();
     }
-
-    sync();
-  }
-
-  {
-    //TODO if start button gets pushed
-    //TODO play a little jingle
-    do_activity();
+    else if (true){ //top pressed, display current trinket      
+      lastPress = millis();
+      display.clearDisplay();
+      if (currTrinket != -1){
+        display.drawBitmap(0, 0, trinkets[currTrinket], 128, 64, WHITE);
+      }
+      display.setTextColor(SSD1306_BLACK);
+      display.setCursor(2,27);
+      display.println(F("Back"));
+      display.display();
+      delay(200);
+      while(false) //wait for left button press
+        delay(100);
+        
+      lastPress = millis();
+    }
+    else if (false){ //right pressed
+      lastPress = millis();
+      do_activity();
+    }
+    else if (false){ //bottom pressed
+      lastPress = millis();
+      Objective objectives [NUM_OBJECTIVES];
+      if (read_objectives(OBJECTIVES_FILE, objectives)){
+        display.clearDisplay();
+      }      
+    }
   }
 }
 
