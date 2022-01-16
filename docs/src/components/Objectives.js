@@ -6,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 import peb from '../images/peb_1.png';
 import { Typography } from "@mui/material";
 import {Button} from "@mui/material";
-import { Card } from '@mui/material';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -18,48 +17,40 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const useStyles = makeStyles({
     root: {
-        padding: "10px 60px",
-        height: "100vh",
+        padding: "10px 50px",
         flexGrow:"1"
     },
     activeObjectives: {
-        position: "relative",
         display: "flex",
-        flexDirection: "column",
-        alignContent: "center",
         justifyContent: "center",
-        height: "100%",
+        alignItems: "center",
+        textAlign: "center",
+        verticalAlign: "middle",
+        height: "25vh",
         borderRadius: "30px",
-        border: "60px solid white",
-        backgroundColor: "white",
     },
     completedObjectives: {
-        position: "relative",
         display: "flex",
-        flexDirection: "column",
-        alignContent: "center",
         justifyContent: "center",
-        height: "100%",
-        borderRadius: "30px",
-        border: "40px solid white",
-        backgroundColor: "white",
-    },
-    button: {
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignContent: "center",
-        justifyContent: "center",
-        borderRadius: "30px",
-        justifyContent: "center",
-        backgroundColor: "#73D4FF",
-        borderRadius: "15px"
+        alignItems: "center",
+        textAlign: "center",
+        verticalAlign: "middle",
+        height: "8vh",
+        borderRadius: "30px"
     },
     title: {
-        textAlign: "left"
+        textAlign: "left",
+        padding: "25px 30px",
     },
-    testing: {
-        alignContent: 'center',
+    wrapper: {
+        display: "flex",
+    },
+    button: {
+        display: "flex",
+        justifyContent: "right",
+        alignItems: "center",
+        textAlign: "center",
+        verticalAlign: "center",
     }
 });
 
@@ -68,53 +59,50 @@ function Collection() {
 
   return (
     <container>
-        <Grid class={classes.root}>
-            <Grid container>
-                {/* Header Title */}
-                <Grid item lg={6}>
-                    <Typography variant="h1" class={classes.title}>Active Objectives</Typography>
-                </Grid>
-                <Grid item lg={4}></Grid>
-                <Grid item lg={2}>
-                    <Button variant="contained" class={classes.testing}>Shuffle</Button>
-                </Grid>
+        <Grid container>
+            <Grid item lg = {6}>
+                <Typography variant="h2" className={classes.title}>Active Objectives</Typography>
             </Grid>
-            <Grid container spacing = {4}>
-                {/* Active Objectives */}
-                <Grid item lg={4} s={12}>
-                    <Paper class={classes.activeObjectives}><Typography>Walk 5000 steps</Typography></Paper>
-                </Grid>
-                <Grid item lg={4} s={12}>
-                    <Paper class={classes.activeObjectives}><Typography>Walk 5000 steps</Typography></Paper>
-                </Grid>
-                <Grid item lg={4} s={12}>
-                    <Paper class={classes.activeObjectives}><Typography>Walk 5000 steps</Typography></Paper>
-                </Grid>
-                <Grid item lg={12}></Grid>
-                <Grid item lg={12}></Grid>
-                <Grid item lg={12}></Grid>
-                <Grid item lg={12}></Grid>
-                {/* Completed Objectives Title */}
-                <Grid item lg={6}>
-                    <Typography variant="h1" class={classes.title}>Completed Objectives</Typography>
-                </Grid>
-                <Grid item lg={6}></Grid>
-                {/* Completed Objectives */}
-                <Grid item lg={4} s={12}>
-                    <Paper class={classes.completedObjectives}><Typography>Walk 5000 steps</Typography></Paper>
-                </Grid>
-                <Grid item lg={4} s={12}>
-                    <Paper class={classes.completedObjectives}><Typography>Walk 5000 steps</Typography></Paper>
-                </Grid>
-                <Grid item lg={4} s={12}>
-                    <Paper class={classes.completedObjectives}><Typography>Walk 5000 steps</Typography></Paper>
-                </Grid>
+            <Grid item lg = {6} className={classes.button}>
+                <Button variant="contained">Shuffle</Button>
             </Grid>
-        </Grid> 
+        </Grid>
+
+        <Grid container spacing={6} className={classes.root}>
+            <Grid item lg={3} >
+                <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+            <Grid item lg={3}>
+                <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+            <Grid item lg={3}>
+                <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+            <Grid item lg={3}>
+                <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+        </Grid>
+        <Typography variant="h2" className={classes.title}>Completed Objectives</Typography>
+        <Grid container spacing={2} className={classes.root}>
+            <Grid item lg={3} >
+                <Paper className={classes.completedObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+            <Grid item lg={3}>
+                <Paper className={classes.completedObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+            <Grid item lg={3}>
+                <Paper className={classes.completedObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+            <Grid item lg={3}>
+                <Paper className={classes.completedObjectives}>Walk 5000 Steps</Paper>
+            </Grid>
+        </Grid>
     </container> 
   )
 }
 
 export default Collection;
+
+
 
 
