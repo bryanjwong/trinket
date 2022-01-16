@@ -12,15 +12,6 @@ function importAll(r) {
 const images = importAll(require.context('../images', true, /\.(png|jpe?g|svg|gif)$/));
 
 const useStyles = makeStyles({
-  title: {
-    paddingLeft: "20px",
-    marginLeft: "20px",
-    marginTop: "20px",
-    marginBottom: "20px",
-    textAlign: "left",
-    fontWeight: "bold",
-    fontSize: "26px"
-  },
   collection: {
     marginTop: "25px",
     height: "100%",
@@ -48,13 +39,9 @@ const useStyles = makeStyles({
   },
   fields: {
     textAlign: "left",
-    fontWeight: "bold",
-    fontSize: "17px"
   }, 
   values: {
     textAlign: "left",
-    fontWeight: "lighter",
-    fontSize: "20px"
   }, 
   textbox: {
     padding: "40px",
@@ -126,9 +113,9 @@ function Collection(props) {
     for (const [id, v] of Object.entries(props.trinkets)) {
       var altImageSrc = images[v.speciesId+"_"+v.evolveLevel+".gif"];
       row.push((id === props.activeId) ? 
-         <Button variant="contained" class={classes.altTrinketActive}
+         <Button disableRipple variant="contained" class={classes.altTrinketActive} 
                  startIcon={<img src={altImageSrc} className={classes.altTrinketPic}/>}></Button> 
-        : <Button variant="contained" class={classes.altTrinket} onClick={() => props.swapActiveId(id)}
+        : <Button disableRipple variant="contained" class={classes.altTrinket} onClick={() => props.swapActiveId(id)}
                   startIcon={<img src={altImageSrc} className={classes.altTrinketPic}/>}></Button>);
       if (row.length === 3) {
         res.push(<div className={classes.altTrinketWrapper}>{row}</div>);
@@ -149,7 +136,9 @@ function Collection(props) {
       <Grid container direction="row">
         {/* Header Title */}
         <Grid item lg={6} >
-          <Typography className={classes.title}>My Collection</Typography>
+          <Typography style={{paddingLeft: "20px", marginLeft: "20px", marginTop: "20px", 
+                              marginBottom: "20px", textAlign: "left", fontWeight: "bold",
+                              fontSize: "26px"}} className={classes.title}>My Collection</Typography>
         </Grid>
         <Grid item lg={6}></Grid>
 
@@ -166,16 +155,16 @@ function Collection(props) {
           
           <Grid item className={classes.textbox}>
             <Typography variant="h3" className={classes.name}>{name}</Typography>
-            <Typography className={classes.fields}>Completed Objective:</Typography>
-            <Typography className={classes.values}>{active.objName}</Typography><br />
-            <Typography className={classes.fields}>Level</Typography>
-            <Typography className={classes.values}>{active.level}</Typography><br />
-            <Typography className={classes.fields}>Steps Taken</Typography>
-            <Typography className={classes.values}>{active.totalSteps}</Typography><br />
-            <Typography className={classes.fields}>Time Adventuring</Typography>
-            <Typography className={classes.values}>{active.totalDuration}</Typography><br />
-            <Typography className={classes.fields}>Adventures Completed</Typography>
-            <Typography className={classes.values}>{active.totalTrips}</Typography>
+            <Typography style={{fontWeight: "bold", fontSize: "17px"}} className={classes.fields}>Completed Objective:</Typography>
+            <Typography style={{fontWeight: "lighter", fontSize: "20px"}} className={classes.values}>{active.objName}</Typography><br />
+            <Typography style={{fontWeight: "bold", fontSize: "17px"}} className={classes.fields}>Level</Typography>
+            <Typography style={{fontWeight: "lighter", fontSize: "20px"}} className={classes.values}>{active.level}</Typography><br />
+            <Typography style={{fontWeight: "bold", fontSize: "17px"}} className={classes.fields}>Steps Taken</Typography>
+            <Typography style={{fontWeight: "lighter", fontSize: "20px"}} className={classes.values}>{active.totalSteps}</Typography><br />
+            <Typography style={{fontWeight: "bold", fontSize: "17px"}} className={classes.fields}>Time Adventuring</Typography>
+            <Typography style={{fontWeight: "lighter", fontSize: "20px"}} className={classes.values}>{active.totalDuration}</Typography><br />
+            <Typography style={{fontWeight: "bold", fontSize: "17px"}} className={classes.fields}>Adventures Completed</Typography>
+            <Typography style={{fontWeight: "lighter", fontSize: "20px"}} className={classes.values}>{active.totalTrips}</Typography>
           </Grid>
         </Grid>
         {/* Alternate Trinkets */}
