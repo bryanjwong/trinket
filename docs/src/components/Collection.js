@@ -11,7 +11,9 @@ const useStyles = makeStyles({
   title: {
     paddingLeft: "20px",
     marginLeft: "20px",
-    textAlign: "left"
+    textAlign: "left",
+    fontFamily: "Roboto",
+    fontWeight: "700"
   },
 
   collection: {
@@ -46,11 +48,13 @@ const useStyles = makeStyles({
 
   textbox: {
     padding: "40px",
-    backgroundColor: "grey",
+    backgroundColor: "white",
     borderRadius: "25px",
   },
   name: {
-    textAlign: "left"
+    textAlign: "left",
+    fontFamily: "Roboto",
+    fontWeight: "700"
   },
 
   altTrinket: {
@@ -63,7 +67,8 @@ const useStyles = makeStyles({
   altTrinketActive: {
     width: "33%",
     padding: "25px",
-    borderRadius: "10px",
+    backgroundColor: "#73D4FF",
+    borderRadius: "25px",
     border: 0
   },
 
@@ -73,9 +78,9 @@ const useStyles = makeStyles({
   },
 
   scrollbox: {
+    alignContent: "right",
     marginRight: "20px",
-    padding: "20px",
-    backgroundColor: "grey",
+    backgroundColor: "#DCEFCA",
     borderRadius: "25px",
     flexGrow: 1,
     overflow: "auto",
@@ -149,9 +154,11 @@ function Collection(props) {
         <Grid item lg={6}></Grid>
 
         {/* Active Trinket Image */}
+        
         <Grid item lg={4} className={classes.wrapper}>
           <img src={peb} className={classes.activeTrinket}/>
         </Grid>
+        
         {/* Adding the the current Trinket Description and stats */}
         <Grid item lg={3} className={classes.wrapper}>
           
