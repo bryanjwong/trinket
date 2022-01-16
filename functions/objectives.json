@@ -2,7 +2,7 @@
   {
     "name": "Walk 5000 steps",
     "goal": "ge",
-    "field": "TOTAL_STEPS",
+    "field": "steps",
     "currVal": 0,
     "goalVal": 5000,
     "reward": {
@@ -13,7 +13,7 @@
   {
     "name": "Walk 1500 steps",
     "goal": "ge",
-    "field": "TOTAL_STEPS",
+    "field": "steps",
     "currVal": 0,
     "goalVal": 1000,
     "reward": {
@@ -25,7 +25,7 @@
   {
     "name": "Walk 500 steps at night",
     "goal": "ge",
-    "field": "TOTAL_STEPS",
+    "field": "steps",
     "rule": "time",
     "hourLow": 18,
     "hourHigh": 24,
@@ -40,7 +40,7 @@
   {
     "name": "Walk 500 steps in the day",
     "goal": "ge",
-    "field": "TOTAL_STEPS",
+    "field": "steps",
     "rule": "time",
     "hourLow": 8,
     "hourHigh": 18,
@@ -55,7 +55,7 @@
   {
     "name": "Reach a maximum altitude of at least 500ft",
     "goal": "ge",
-    "field": "ACTIVITY_ALTITUDE_REACH",
+    "field": "altitude",
     "currVal": 0,
     "goalVal": 500,
     "reward": {
@@ -67,7 +67,7 @@
   {
     "name": "Reach a maximum altitude of at least 750ft",
     "goal": "ge",
-    "field": "ACTIVITY_ALTITUDE_REACH",
+    "field": "altitude",
     "currVal": 0,
     "goalVal": 750,
     "reward": {
@@ -76,32 +76,9 @@
   },
 
   {
-    "name": "Achieve an altitude gain of 200ft",
-    "goal": "ge",
-    "field": "ACTIVITY_ALTITUDE_GAIN",
-    "currVal": 0,
-    "goalVal": 200,
-    "reward": {
-      "type": "exp",
-      "value": 500
-    }
-  },
-
-  {
-    "name": "Achieve an altitude gain of 400ft",
-    "goal": "ge",
-    "field": "ACTIVITY_ALTITUDE_GAIN",
-    "currVal": 0,
-    "goalVal": 400,
-    "reward": {
-      "type": "trinket"
-    }
-  },
-
-  {
     "name": "Go on an uninterrupted walk for 30 minutes",
     "goal": "ge",
-    "field": "ACTIVITY_DURATION",
+    "field": "duration",
     "currVal": 0,
     "goalVal": 30,
     "reward": {
@@ -113,7 +90,7 @@
   {
     "name": "Go on an uninterrupted walk for 60 minutes",
     "goal": "ge",
-    "field": "ACTIVITY_DURATION",
+    "field": "duration",
     "currVal": 0,
     "goalVal": 60,
     "reward": {
@@ -125,7 +102,7 @@
   {
     "name": "Walk 1000 steps on the weekend",
     "goal": "ge",
-    "field": "TOTAL_STEPS",
+    "field": "steps",
     "rule": "day",
     "day": "SU",
     "currVal": 0,
@@ -139,7 +116,7 @@
   {
     "name": "Walk 1000 steps on a weekday",
     "goal": "ge",
-    "field": "TOTAL_STEPS",
+    "field": "steps",
     "rule": "day",
     "day": "MTWRF",
     "currVal": 0,
@@ -152,7 +129,7 @@
   {
     "name": "Walk a distance of 0.5 miles",
     "goal": "ge",
-    "field": "TOTAL_DISTANCE",
+    "field": "distance",
     "currVal": 0,
     "goalVal": 0.5,
     "reward": {
@@ -164,7 +141,7 @@
   {
     "name": "Walk a distance of 1 mile",
     "goal": "ge",
-    "field": "TOTAL_DISTANCE",
+    "field": "distance",
     "currVal": 0,
     "goalVal": 1,
     "reward": {
@@ -176,9 +153,79 @@
   {
     "name": "Walk a distance of 2.5 miles",
     "goal": "ge",
-    "field": "TOTAL_DISTANCE",
+    "field": "distance",
     "currVal": 0,
     "goalVal": 2.5,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Log a temperature of at least 20C",
+    "goal": "ge",
+    "field": "temperature",
+    "currVal": 0,
+    "goalVal": 20,
+    "reward": {
+      "type": "exp",
+      "value": 500
+    }
+  },
+
+  {
+    "name": "Log a temperature of at least 24C",
+    "goal": "ge",
+    "field": "temperature",
+    "currVal": 0,
+    "goalVal": 24,
+    "reward": {
+      "type": "exp",
+      "value": 1000
+    }
+  },
+
+  {
+    "name": "Log a temperature of at least 26C",
+    "goal": "ge",
+    "field": "temperature",
+    "currVal": 0,
+    "goalVal": 26,
+    "reward": {
+      "type": "trinket"
+    }
+  },
+
+  {
+    "name": "Log a humidity of at least 40%",
+    "goal": "ge",
+    "field": "humidity",
+    "currVal": 0,
+    "goalVal": 40,
+    "reward": {
+      "type": "exp",
+      "value": 500
+    }
+  },
+
+  {
+    "name": "Log a humidity of at least 50%",
+    "goal": "ge",
+    "field": "humidity",
+    "currVal": 0,
+    "goalVal": 50,
+    "reward": {
+      "type": "exp",
+      "value": 1000
+    }
+  },
+
+  {
+    "name": "Log a humidity of at least 70%",
+    "goal": "ge",
+    "field": "humidity",
+    "currVal": 0,
+    "goalVal": 70,
     "reward": {
       "type": "trinket"
     }

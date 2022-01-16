@@ -42,7 +42,7 @@ function About(props) {
               <div style={{flex: "60%", fontSize: "14px", paddingTop: "20px"}}>
                 <Typography style={{fontWeight: "bolder", fontSize: "50px", fontFamily: "Roboto", textAlign: "left"}}>About Trinket</Typography>
                 <Typography style={{fontSize: "22px", fontFamily: "Roboto", textAlign: "left"}}>
-                  Trinket is a gamified hiking companion that incentivizes fitness and exploration through randomized goal-setting and collectible rewards.
+                  Trinket is a gamified hiking companion that incentivizes fitness and exploration through randomized objectives and collectible rewards.
                 </Typography>
                 <br/>
                 <Typography style={{fontSize: "22px", fontFamily: "Roboto", textAlign: "left"}}>

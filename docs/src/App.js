@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Collection from './components/Collection';
 import Objectives from './components/Objectives';
 import About from './components/About';
+import Map from './components/Map';
 import { db } from "./services/Firebase"
 import { ref, get, set } from "firebase/database";
 import '@fontsource/roboto/300.css';
@@ -79,6 +80,8 @@ function App() {
         return (<Objectives objectives={objectives} complObjectives={complObjectives} shuffleObjs={shuffleObjs}/>);
       case 2:
         return (<About/>);
+      case 3:
+        return (<Map/>);
     }
   }
 
