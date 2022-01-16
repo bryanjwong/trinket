@@ -42,9 +42,6 @@ const useStyles = makeStyles({
         textAlign: "left",
         padding: "25px 30px",
     },
-    wrapper: {
-        display: "flex",
-    },
     button: {
         display: "flex",
         justifyContent: "right",
