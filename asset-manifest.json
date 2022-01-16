@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/trinket/static/css/main.ee7af55b.css",
-    "main.js": "/trinket/static/js/main.cffb1bde.js",
+    "main.js": "/trinket/static/js/main.836e12f3.js",
     "static/js/787.f952d302.chunk.js": "/trinket/static/js/787.f952d302.chunk.js",
     "static/media/2_3.gif": "/trinket/static/media/2_3.5de1d0930fd2cf79275f.gif",
     "static/media/1_3.gif": "/trinket/static/media/1_3.46779b9895f4e1aa4ea8.gif",
@@ -56,11 +56,11 @@
     "static/media/roboto-greek-ext-700-normal.woff2": "/trinket/static/media/roboto-greek-ext-700-normal.9674bc0ae12c2551d9d1.woff2",
     "index.html": "/trinket/index.html",
     "main.ee7af55b.css.map": "/trinket/static/css/main.ee7af55b.css.map",
-    "main.cffb1bde.js.map": "/trinket/static/js/main.cffb1bde.js.map",
+    "main.836e12f3.js.map": "/trinket/static/js/main.836e12f3.js.map",
     "787.f952d302.chunk.js.map": "/trinket/static/js/787.f952d302.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ee7af55b.css",
-    "static/js/main.cffb1bde.js"
+    "static/js/main.836e12f3.js"
   ]
 }
