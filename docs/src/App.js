@@ -50,9 +50,7 @@ function App() {
   // Swap active trinket to specified id
   function swapActiveId(id) {
     setActiveId(id);
-    set(ref(db, 'users/bwong/consts'), {
-      activeId: id
-    });
+    set(ref(db, 'users/bwong/consts/activeId'), id);
   }
 
   // Load all Firebase data on startup
@@ -64,7 +62,7 @@ function App() {
   function renderPage(pageId) {
     switch(pageId) {
       case 0:
-        return (<Collection trinkets={trinkets} activeId={activeId} setActiveId={setActiveId}/>);
+        return (<Collection trinkets={trinkets} activeId={activeId} swapActiveId={swapActiveId}/>);
       case 1:
         return (<Objectives/>);
       case 2:

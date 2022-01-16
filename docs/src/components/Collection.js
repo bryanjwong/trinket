@@ -9,7 +9,8 @@ import {Button} from "@mui/material";
 
 const useStyles = makeStyles({
   collection: {
-    marginTop: "25px"
+    marginTop: "25px",
+    height: "100%"
   },
 
   wrapper: {
@@ -41,28 +42,33 @@ const useStyles = makeStyles({
   }, 
 
   textbox: {
-    padding: "20px",
-    border: "40px solid grey",
+    padding: "40px",
     backgroundColor: "grey",
     borderRadius: "25px",
   },
 
-  altTrinkets: {
-    padding: "20px",
-    border: "40px solid grey",
-    backgroundColor: "grey",
+  altTrinket: {
+    width: "33%",
     borderRadius: "25px",
-    width: "100%"
+  },
+
+  altTrinketPic: {
+    width: "100%",
+    borderRadius: "25px",
   },
 
   scrollbox: {
     padding: "20px",
-    border: "40px solid grey",
     backgroundColor: "grey",
     borderRadius: "25px",
     flexGrow: 1,
     overflow: "auto",
     maxHeight: "60vh",
+  },
+
+  invis: {
+    width: "33%",
+    visibility: "hidden"
   }
 
 });
@@ -91,6 +97,27 @@ function Collection(props) {
       break;
     default:
       name = "?";
+  }
+
+  function generateAltTrinkets() {
+    var res = [];
+    var row = [];
+    for (const [id, v] of Object.entries(props.trinkets)) {
+      row.push(<Button variant="contained" class={classes.altTrinket} onClick={() => props.swapActiveId(id)}
+                         startIcon={<img src={peb} className={classes.altTrinketPic}/>}></Button>);
+      if (row.length === 3) {
+        res.push(<div className={classes.altTrinketWrapper}>{row}</div>);
+        row = [];
+      }
+    }
+    if (row) {
+      while (row.length < 3) {
+        row.push(<Button variant="contained" class={classes.invis}></Button>);
+      }
+      console.log(row);
+      res.push(<div className={classes.altTrinketWrapper}>{row}</div>);
+    }
+    return res;
   }
 
   return (
@@ -125,44 +152,10 @@ function Collection(props) {
         </Grid>
         {/* Alternate Trinkets */}
         <Grid item lg={5} className={classes.wrapper}>
-          <Grid item className={classes.scrollbox}>  
-          <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>new line</h1>
-        <h1>end line</h1></Grid>
+          <Grid item className={classes.scrollbox}>
+            {generateAltTrinkets()}
+          </Grid>
         </Grid>
-        {/* <Grid item lg ={2}>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-          <span>&nbsp;</span>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-          <span>&nbsp;</span>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-        </Grid>
-        <Grid item lg ={2}>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-          <span>&nbsp;</span>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-          <span>&nbsp;</span>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-        </Grid>
-        <Grid item lg ={2}>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-          <span>&nbsp;</span>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-          <span>&nbsp;</span>
-          <Button variant="contained"><img src={peb} class={classes.altTrinkets} ></img></Button>
-        </Grid> */}
       </Grid>
     </Box>
   )
