@@ -12,14 +12,16 @@ function getRandomObjective() {
   return obj;
 }
 
-function getRandomTrinket(trinketId) {
+function getRandomTrinket(trinketId, objName) {
   var trinket = trinkets[Math.floor(Math.random()*trinkets.length)];
   trinket["trinketId"] = trinketId;
+  trinket["objName"] = objName;
   trinket["currExp"] = 0;
   trinket["level"] = 1;
   trinket["evolveLevel"] = 1;
   trinket["totalSteps"] = 0;
   trinket["totalDuration"] = 0;
+  trinket["totalTrips"] = 0;
   return trinket;
 }
 
@@ -63,7 +65,7 @@ exports.handleObjWrite = functions.database.ref("/users/{usr}/objectives/{obj}/"
                  return admin.database()
                              .ref("/users/"+context.params.usr+"/trinkets/")
                              .child(trinketId)
-                             .set(getRandomTrinket(trinketId))
+                             .set(getRandomTrinket(trinketId, obj["name"]))
                })
                .then((snapshot) => {
                  return admin.database()
