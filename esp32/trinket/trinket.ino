@@ -6,11 +6,8 @@
 #include <SPI.h>
 #include <SD.h>
 
-
 #define FIREBASE_HOST "https://trinket-ideahacks-default-rtdb.firebaseio.com/"
 #define FIREBASE_AUTH "I44ivk8FBivPIvMjlRtTWYH8J9MJ06ye8Q72jzAG"
-#define FIREBASE_ACTIVITY_PATH "/activities/"
-#define FIREBASE_OBJECTIVES_PATH "/objectives/"
 #define WIFI_SSID "CalebAndroid"
 #define WIFI_PASSWORD "wxai8878"
 #define OBJECTIVES_FILE "objectives.txt"
@@ -22,6 +19,9 @@
 #define SD_CS 0
 #define SD_BASEFILE  "activity_names.txt"
 
+String USER = "bwong";
+String FIREBASE_ACTIVITY_PATH = "/users/" + USER + "/activities";
+String FIREBASE_OBJECTIVES_PATH = "/users/" + USER + "/objectives/obj";
 
 FirebaseData firebaseData;
 HardwareSerial gpsSerial(2);
@@ -462,13 +462,15 @@ void sync(){
   if (read_objectives(OBJECTIVES_FILE, objectives_old)){
     for (int i = 0; i < NUM_OBJECTIVES; i++){
       String n;
-      Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/name", n);
+      Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/name", n);
       if (n == objectives_old[i].m_name){
-        if (objectives_old[i].m_complete)
-          Firebase.setBool(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/complete", true);
+        if (objectives_old[i].m_complete){
+          Firebase.setFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/currVal", objectives_old[i].m_currVal);  
+          Firebase.setBool(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/completed", true);
+        }
         else{
           if (objectives_old[i].m_field == "steps" || objectives_old[i].m_field == "duration" || objectives_old[i].m_field == "distance")
-            Firebase.setFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/currVal", objectives_old[i].m_currVal);       
+            Firebase.setFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/currVal", objectives_old[i].m_currVal);       
         }
       }
     }    
@@ -481,34 +483,34 @@ void sync(){
   Objective objectives_new [NUM_OBJECTIVES];
   for (int i = 0; i < NUM_OBJECTIVES; i++){
     String str;
-    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/name", str);
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/name", str);
     objectives_new[i].m_name = str;
     
     str = "";
-    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/rule", str);
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/rule", str);
     objectives_new[i].m_rule = str;
     if (str == "day"){
       str = "";
-      Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/day", str);
+      Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/day", str);
       objectives_new[i].m_day = str;
     }
     else if (str == "time"){
       int t;
-      Firebase.getInt(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/hourLow", t);
+      Firebase.getInt(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/hourLow", t);
       objectives_new[i].m_hourLow = t;
-      Firebase.getInt(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/hourHigh", t);
+      Firebase.getInt(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/hourHigh", t);
       objectives_new[i].m_hourHigh = t;
     }
 
     objectives_new[i].m_complete = false;
-    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/field", str);
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/field", str);
     objectives_new[i].m_field = str;
-    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/goalCmp", str);
+    Firebase.getString(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/goal", str);
     objectives_new[i].m_goalCmp = str;
     float f;
-    Firebase.getFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/goalVal", f);
+    Firebase.getFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/goalVal", f);
     objectives_new[i].m_goalVal = f;
-    Firebase.getFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i) + "/currVal", f);
+    Firebase.getFloat(firebaseData, FIREBASE_OBJECTIVES_PATH + String(i+1) + "/currVal", f);
     objectives_new[i].m_currVal = f;
   }
 
