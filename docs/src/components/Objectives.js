@@ -84,7 +84,7 @@ function Collection(props) {
           <Grid item lg={4} >
             <Paper style={{borderRadius: "20px"}} className={classes.completedObjectives}>
                 <div>
-                    <p style={{fontWeight: "bold", fontSize: "22px"}}>{v.name}</p>
+                    <p style={{fontSize: "22px"}}>{v.name}</p>
                     <p style={{marginTop: "-20px"}}>{timeToString(v.completion_time)}</p>
                 </div>
                 
@@ -101,19 +101,41 @@ function Collection(props) {
                 <Typography style={{fontSize: "26px", fontWeight: "bold"}} className={classes.title}>Active Objectives</Typography>
             </Grid>
             <Grid item lg = {6} className={classes.button}>
-                <Button style={{background: "#73D4FF", borderRadius: "20px", color: "black"}} variant="contained">Shuffle</Button>
+                <Button style={{background: "#73D4FF", borderRadius: "20px", color: "black"}} 
+                                variant="contained" onClick={() => props.shuffleObjs()}>Shuffle</Button>
             </Grid>
         </Grid>
 
         <Grid container spacing={10} className={classes.root}>
             <Grid item lg={4} >
-                <Paper style={{borderRadius: "30px"}} className={classes.activeObjectives}>{obj.obj1.name}</Paper>
+                <Paper style={{borderRadius: "30px"}} className={classes.activeObjectives}>
+                    <div>
+                        <p style={{fontWeight: "bold"}}>{obj.obj1.name}</p>
+                        <p style={{marginTop: "-20px", fontSize: "20px"}}>
+                            Progress: {obj.obj1.currVal+"/"+obj.obj1.goalVal}
+                        </p>
+                    </div>
+                </Paper>
             </Grid>
             <Grid item lg={4}>
-                <Paper style={{borderRadius: "30px"}} className={classes.activeObjectives}>{obj.obj2.name}</Paper>
+                <Paper style={{borderRadius: "30px"}} className={classes.activeObjectives}>
+                    <div>
+                        <p style={{fontWeight: "bold"}}>{obj.obj2.name}</p>
+                        <p style={{marginTop: "-20px", fontSize: "20px"}}>
+                            Progress: {obj.obj2.currVal+"/"+obj.obj2.goalVal}
+                        </p>
+                    </div>
+                </Paper>
             </Grid>
             <Grid item lg={4}>
-                <Paper style={{borderRadius: "30px"}} className={classes.activeObjectives}>{obj.obj3.name}</Paper>
+                <Paper style={{borderRadius: "30px"}} className={classes.activeObjectives}>
+                    <div>
+                        <p style={{fontWeight: "bold"}}>{obj.obj3.name}</p>
+                        <p style={{marginTop: "-20px", fontSize: "20px"}}>
+                            Progress: {obj.obj3.currVal+"/"+obj.obj3.goalVal}
+                        </p>
+                    </div>
+                </Paper>
             </Grid>
         </Grid>
 

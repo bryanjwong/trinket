@@ -2,19 +2,20 @@ import React, { useEffect } from "react";
 import Navbar from './components/Navbar';
 import Collection from './components/Collection';
 import Objectives from './components/Objectives';
-import './App.css';
+import About from './components/About';
 import { db } from "./services/Firebase"
 import { ref, get, set } from "firebase/database";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
+import './App.css';
 
 function App() {
 
   // Use this to change current Page View State
   const [pageState, setPageState] = React.useState(0);
-  const pages = ['Collection', 'Objectives', 'Map'];
+  const pages = ['Collection', 'Objectives', 'About'];
 
   const [objectives, setObjectives] = React.useState({
     "obj1": { "name": "?" },
@@ -50,11 +51,12 @@ function App() {
         setTrinkets(t);
         setActiveId(data.consts.activeId);
         console.log(data);
-        console.log(objectives);
-        console.log(complObjectives);
-        console.log(trinkets);
-        console.log(activeId);
       })
+  }
+
+  function shuffleObjs() {
+    fetch("https://us-central1-trinket-ideahacks.cloudfunctions.net/shuffleObjs")
+    .then(window.location.reload(false));
   }
 
   // Swap active trinket to specified id
@@ -74,9 +76,9 @@ function App() {
       case 0:
         return (<Collection trinkets={trinkets} activeId={activeId} swapActiveId={swapActiveId}/>);
       case 1:
-        return (<Objectives objectives={objectives} complObjectives={complObjectives}/>);
+        return (<Objectives objectives={objectives} complObjectives={complObjectives} shuffleObjs={shuffleObjs}/>);
       case 2:
-        return (<p>Map</p>);
+        return (<About/>);
     }
   }
 
