@@ -54,21 +54,36 @@ void setup() {
   // put your setup code here, to run once:   
   Serial.begin(9600);
   gpsSerial.begin(9600);
-  setup_WIFI();
-  setup_firebase();
   if (!SD.begin(SD_CS))
     Serial.println("SD initialization failed!");
-  int test;
-  Firebase.getInt(firebaseData, "/default/test", test);
-  Serial.println(test);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+//
+//  while (gpsSerial.available() > 0)
+//    if (gps.encode(gpsSerial.read()))
+//      displayInfo();
 
-  while (gpsSerial.available() > 0)
-    if (gps.encode(gpsSerial.read()))
-      displayInfo();
+
+  //TODO show main menu
+  //TODO check for button presses
+
+  {
+    //TODO if sync button gets pushed
+    if (WiFi.status() != WL_CONNECTED){
+      setup_WIFI();
+      setup_firebase();
+    }
+
+    sync();
+  }
+
+  {
+    //TODO if start button gets pushed
+    //TODO play a little jingle
+    do_activity();
+  }
 }
 
 void displayInfo()
@@ -189,6 +204,41 @@ void do_activity(){
   int startHour = gps.time.hour();
   int startMinute = gps.time.minute();
   int startSecond = gps.time.second();
+
+  //check for rule fits
+  bool fitRules[NUM_OBJECTIVES];
+  for (int i = 0; i < NUM_OBJECTIVES; i++) {
+    fitRules[i] = false;
+    if (objectives[i].m_rule == "day"){
+        int t [] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+        int startYearTemp = startYear - (startMonth < 3);
+        //0 is Sunday
+        int day = (startYearTemp + startYearTemp/4 - startYearTemp/100 + startYearTemp/400 + t[startMonth-1] + startDay) % 7;
+        char dayChar;
+        switch (day) {
+          case 0: dayChar = 'U'; break;
+          case 1: dayChar = 'M'; break;
+          case 2: dayChar = 'T'; break;
+          case 3: dayChar = 'W'; break;
+          case 4: dayChar = 'H'; break;
+          case 5: dayChar = 'F'; break;
+          default: dayChar = 'S'; break;
+        }
+        
+        for (int j = 0; j < objectives[i].m_day.length(); j++){
+          if (objectives[i].m_day[j] == dayChar){
+            fitRules[i] = true;
+            break;
+          }
+        }          
+    }
+    else if (objectives[i].m_rule == "time"){
+      if (startHour >= objectives[i].m_hourLow && startHour < objectives[i].m_hourHigh)
+        fitRules[i] = true;
+    }
+    else
+      fitRules[i] = true;
+  }
   
   String activityName = String(gps.date.year());
   activityName += "-" + String(gps.date.month());
@@ -206,6 +256,37 @@ void do_activity(){
   
   while (true){
     //main activity loop  
+
+    
+    //TODO check for button press to update screen or finish activity
+    bool changeScreen = false;
+
+    {
+      //TODO check if button pressed to finish activity
+      //TODO play a little jingle
+      if (hasObjectives){      
+        for (int i = 0; i < NUM_OBJECTIVES; i++){
+          if (objectives[i].m_complete || !fitRules[i])
+            continue;
+
+          if (objectives[i].m_field == "steps")
+              objectives[i].m_currVal = float(steps) + objectives[i].m_currVal;
+          else if (objectives[i].m_field == "altitude"){
+            
+          }
+          else if (objectives[i].m_field == "temperature"){
+            
+          }
+          else if (objectives[i].m_field == "duration")
+            objectives[i].m_currVal = float(duration) + objectives[i].m_currVal;
+          else if (objectives[i].m_field == "distance")
+            objectives[i].m_currVal = distance + objectives[i].m_currVal;
+        }
+      }
+      write_objectives(OBJECTIVES_FILE, objectives);
+      activityFile.close();
+      return;
+    }
 
     //check for step update
     bool stepped = false;
@@ -268,86 +349,49 @@ void do_activity(){
       }
     }
 
-    //TODO check for button press to update screen or finish
-    bool changeScreen = false;
-    //make sure to save activity and objectives if finish
-
     //check if hit objective
     bool hitObjective = false;
     int objectiveNum = 0;
     if(hasObjectives && (stepped || measurement)){
       for (int i = 0; i < NUM_OBJECTIVES; i++){
-        if (objectives[i].m_complete)
+        if (objectives[i].m_complete || !fitRules[i])
           continue;
           
-        bool fitRule = false;  
-        if (objectives[i].m_rule == "day"){
-            int t [] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
-            int startYearTemp = startYear - (startMonth < 3);
-            //0 is Sunday
-            int day = (startYearTemp + startYearTemp/4 - startYearTemp/100 + startYearTemp/400 + t[startMonth-1] + startDay) % 7;
-            char dayChar;
-            switch (day) {
-              case 0: dayChar = 'U'; break;
-              case 1: dayChar = 'M'; break;
-              case 2: dayChar = 'T'; break;
-              case 3: dayChar = 'W'; break;
-              case 4: dayChar = 'H'; break;
-              case 5: dayChar = 'F'; break;
-              default: dayChar = 'S'; break;
-            }
-            
-            for (int j = 0; j < objectives[i].m_day.length(); j++){
-              if (objectives[i].m_day[j] == dayChar){
-                fitRule = true;
-                break;
-              }
-            }          
+        if (objectives[i].m_field == "steps"){
+          if (float(steps) + objectives[i].m_currVal >= objectives[i].m_goalVal && objectives[i].m_goalCmp){
+            hitObjective = true;
+            objectiveNum = i;
+            objectives[i].m_complete = true;
+            objectives[i].m_currVal = objectives[i].m_goalVal;
+          }
         }
-        else if (objectives[i].m_rule == "time"){
-          if (startHour >= objectives[i].m_hourLow && startHour < objectives[i].m_hourHigh)
-            fitRule = true;
+        else if (objectives[i].m_field == "altitude"){
+          if (alt >= objectives[i].m_goalVal && objectives[i].m_goalCmp == "ge" || alt <= objectives[i].m_goalVal && objectives[i].m_goalCmp == "le"){
+            hitObjective = true;
+            objectiveNum = i;
+            objectives[i].m_complete = true;
+            objectives[i].m_currVal = objectives[i].m_goalVal;
+          }
         }
-        else
-          fitRule = true;
-
-        if (fitRule){
-          if (objectives[i].m_field == "steps"){
-            if (float(steps) + objectives[i].m_currVal >= objectives[i].m_goalVal && objectives[i].m_goalCmp){
-              hitObjective = true;
-              objectiveNum = i;
-              objectives[i].m_complete = true;
-              objectives[i].m_currVal = objectives[i].m_goalVal;
-            }
-          }
-          else if (objectives[i].m_field == "altitude"){
-            if (alt >= objectives[i].m_goalVal && objectives[i].m_goalCmp == "ge" || alt <= objectives[i].m_goalVal && objectives[i].m_goalCmp == "le"){
-              hitObjective = true;
-              objectiveNum = i;
-              objectives[i].m_complete = true;
-              objectives[i].m_currVal = objectives[i].m_goalVal;
-            }
-          }
-          else if (objectives[i].m_field == "temperature"){
-            
-          }
-          else if (objectives[i].m_field == "duration"){
-            if (float(duration) + objectives[i].m_currVal >= objectives[i].m_goalVal){
-              hitObjective = true;
-              objectiveNum = i;
-              objectives[i].m_complete = true;
-              objectives[i].m_currVal = objectives[i].m_goalVal;
-            }
-          }
-          else if (objectives[i].m_field == "distance"){
-            if (distance + objectives[i].m_currVal >= objectives[i].m_goalVal){
-              hitObjective = true;
-              objectiveNum = i;
-              objectives[i].m_complete = true;
-              objectives[i].m_currVal = objectives[i].m_goalVal;
-            }            
-          }          
+        else if (objectives[i].m_field == "temperature"){
+          
         }
+        else if (objectives[i].m_field == "duration"){
+          if (float(duration) + objectives[i].m_currVal >= objectives[i].m_goalVal){
+            hitObjective = true;
+            objectiveNum = i;
+            objectives[i].m_complete = true;
+            objectives[i].m_currVal = objectives[i].m_goalVal;
+          }
+        }
+        else if (objectives[i].m_field == "distance"){
+          if (distance + objectives[i].m_currVal >= objectives[i].m_goalVal){
+            hitObjective = true;
+            objectiveNum = i;
+            objectives[i].m_complete = true;
+            objectives[i].m_currVal = objectives[i].m_goalVal;
+          }            
+        }          
       }
     }
     
