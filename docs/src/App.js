@@ -81,6 +81,8 @@ function App() {
       <Navbar 
         pages={pages}
         setPageState={setPageState}
+        trinkets={trinkets}
+        activeId={activeId}
       />
       {renderPage(pageState)}
     </div>

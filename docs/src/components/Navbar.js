@@ -7,17 +7,32 @@ import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import logo from '../images/logo.png';
 
+function importAll(r) {
+  let images = {};
+  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+  return images;
+}
+const images = importAll(require.context('../images', true, /\.(png|jpe?g|svg|gif)$/));
+
 const useStyles = makeStyles({
   bar: {
     backgroundColor: "white"
   },
   logo: {
     height: "90px"
+  },
+  buddy: {
+    position: "relative",
+    height: "150px",
+    transform: "scaleX(-1)",
+    top: "-20px"
   }
 });
 
 function Navbar(props) {
   const classes = useStyles();
+  var active = props.trinkets[props.activeId];
+  var activeImageSrc = images[active.speciesId+"_"+active.evolveLevel+".gif"];
 
   return (
     <AppBar position="static" style={{ background: 'white' }}>
@@ -37,6 +52,8 @@ function Navbar(props) {
               </Button>
             ))}
           </Box>    
+
+          <img src={activeImageSrc} className={classes.buddy}></img>
 
         </Toolbar>
       </Container>
