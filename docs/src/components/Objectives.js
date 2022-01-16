@@ -30,7 +30,7 @@ const useStyles = makeStyles({
         fontFamily: "Roboto",
         fontSize: "100%",
         padding: "0px 50px 0px 50px",
-        maxWidth: "250px"
+        // maxWidth: "250px"
     },
     completedObjectives: {
         display: "flex",
@@ -38,12 +38,12 @@ const useStyles = makeStyles({
         alignItems: "center",
         textAlign: "center",
         verticalAlign: "middle",
-        height: "8vh",
+        height: "12vh",
         borderRadius: "30px",
         fontFamily: "Roboto",
         fontSize: "100%",
         padding: "0px 50px 0px 50px",
-        maxWidth: "300px"
+        // maxWidth: "300px"
     },
     title: {
         textAlign: "left",
@@ -52,6 +52,7 @@ const useStyles = makeStyles({
     button: {
         display: "flex",
         justifyContent: "right",
+        padding: "0px 60px",
         alignItems: "center",
         textAlign: "center",
         verticalAlign: "center",
@@ -74,7 +75,7 @@ function Collection() {
 
         <Grid container spacing={6} className={classes.root}>
             <Grid item lg={3} >
-                <Paper className={classes.activeObjectives}>Walk 5000 Steps, dub dub dub dub</Paper>
+                <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
             </Grid>
             <Grid item lg={3}>
                 <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
