@@ -1,9 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from "@material-ui/core/Grid";
-import peb from '../images/0_1.png';
 import { Typography } from "@mui/material";
 import {Button} from "@mui/material";
 

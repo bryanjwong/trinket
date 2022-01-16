@@ -4,8 +4,7 @@ import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from "@material-ui/core/Grid";
 import { Typography } from "@mui/material";
-import {Button} from "@mui/material";
-import peb from '../images/0_1.png'
+import { Button } from "@mui/material";
 
 function importAll(r) {
   let images = {};
@@ -18,16 +17,17 @@ const useStyles = makeStyles({
   title: {
     paddingLeft: "20px",
     marginLeft: "20px",
+    marginTop: "20px",
+    marginBottom: "20px",
     textAlign: "left",
     fontFamily: "Roboto",
-    fontWeight: "700"
+    fontWeight: "bold",
+    fontSize: "26px"
   },
-
   collection: {
     marginTop: "25px",
-    height: "100%"
+    height: "100%",
   },
-
   wrapper: {
     padding: "20px",
     display: "flex"
@@ -37,40 +37,46 @@ const useStyles = makeStyles({
     width: "100%",
     borderRadius: "25px",
   },
-
-  activeText: {
-    width: "100%",
+  activeOverlay: {
+    position: "absolute",
+    marginLeft: "60px",
+    marginTop: "40px",
+    fontSize: "20px",
   },
-
+  pin: {
+    height: "20px",
+  },
+  activeText: {
+    width: "100%"
+  },
   fields: {
     textAlign: "left",
     fontWeight: "bold",
-    fontSize: "medium"
+    fontSize: "17px"
   }, 
   values: {
     textAlign: "left",
-    fontWeight: "normal",
-    fontSize: "medium"
+    fontWeight: "lighter",
+    fontSize: "20px"
   }, 
-
   textbox: {
     padding: "40px",
+    paddingRight: "100px",
     backgroundColor: "white",
     borderRadius: "25px",
   },
   name: {
     textAlign: "left",
     fontFamily: "Roboto",
-    fontWeight: "700"
+    fontWeight: "700",
+    marginBottom: "20px"
   },
-
   altTrinket: {
     width: "33%",
     padding: "25px",
     backgroundColor: "transparent",
     border: 0,
   },
-
   altTrinketActive: {
     width: "33%",
     padding: "25px",
@@ -78,12 +84,10 @@ const useStyles = makeStyles({
     borderRadius: "25px",
     border: 0
   },
-
   altTrinketPic: {
     width: "100%",
     borderRadius: "10px",
   },
-
   scrollbox: {
     alignContent: "right",
     marginRight: "20px",
@@ -93,7 +97,6 @@ const useStyles = makeStyles({
     overflow: "auto",
     maxHeight: "60vh",
   },
-
   invis: {
     width: "33%",
     visibility: "hidden"
@@ -133,7 +136,7 @@ function Collection(props) {
     var res = [];
     var row = [];
     for (const [id, v] of Object.entries(props.trinkets)) {
-      var altImageSrc = images[v.speciesId+"_"+v.evolveLevel+".png"];
+      var altImageSrc = images[v.speciesId+"_"+v.evolveLevel+".gif"];
       row.push((id === props.activeId) ? 
          <Button variant="contained" class={classes.altTrinketActive}
                  startIcon={<img src={altImageSrc} className={classes.altTrinketPic}/>}></Button> 
@@ -164,9 +167,11 @@ function Collection(props) {
         <Grid item lg={6}></Grid>
 
         {/* Active Trinket Image */}
-        
         <Grid item lg={4} className={classes.wrapper}>
           <img src={activeImageSrc} className={classes.activeTrinket}/>
+          <div className={classes.activeOverlay}>
+            <img src={images["pin.png"]} className={classes.pin}/><span>Active Trinket</span>
+          </div>
         </Grid>
         
         {/* Adding the the current Trinket Description and stats */}
@@ -176,11 +181,11 @@ function Collection(props) {
             <Typography variant="h3" className={classes.name}>{name}</Typography>
             <Typography className={classes.fields}>Completed Objective:</Typography>
             <Typography className={classes.values}>{active.objName}</Typography><br />
-            <Typography className={classes.fields}>Level:</Typography>
+            <Typography className={classes.fields}>Level</Typography>
             <Typography className={classes.values}>{active.level}</Typography><br />
-            <Typography className={classes.fields}>Steps Taken:</Typography>
+            <Typography className={classes.fields}>Steps Taken</Typography>
             <Typography className={classes.values}>{active.totalSteps}</Typography><br />
-            <Typography className={classes.fields}>Time Adventuring:</Typography>
+            <Typography className={classes.fields}>Time Adventuring</Typography>
             <Typography className={classes.values}>{active.totalDuration}</Typography><br />
             <Typography className={classes.fields}>Adventures Completed</Typography>
             <Typography className={classes.values}>{active.totalTrips}</Typography>
