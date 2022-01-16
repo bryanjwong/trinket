@@ -16,7 +16,11 @@ function App() {
   const [pageState, setPageState] = React.useState(0);
   const pages = ['Collection', 'Objectives', 'Map'];
 
-  const [objectives, setObjectives] = React.useState([]);
+  const [objectives, setObjectives] = React.useState({
+    "obj1": { "name": "?" },
+    "obj2": { "name": "?" },
+    "obj3": { "name": "?" }
+  });
   const [complObjectives, setComplObjectives] = React.useState([]);
   const [trinkets, setTrinkets] = React.useState({"0": {
       "name1": "?",
@@ -70,7 +74,7 @@ function App() {
       case 0:
         return (<Collection trinkets={trinkets} activeId={activeId} swapActiveId={swapActiveId}/>);
       case 1:
-        return (<Objectives/>);
+        return (<Objectives objectives={objectives} complObjectives={complObjectives}/>);
       case 2:
         return (<p>Map</p>);
     }
