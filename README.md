@@ -1,5 +1,5 @@
 # Trinket
-### [Website](https://bryanjwong.github.io/trinket/) | Demo Video (TBA) | [Devpost](https://devpost.com/software/trinket) | Slide Deck (TBA)
+### [Website](https://bryanjwong.github.io/trinket/) | [Demo Video] (https://youtu.be/ETAP34A5Hy8) | [Devpost](https://devpost.com/software/trinket) | [Slide Deck](https://docs.google.com/presentation/d/1jQ3DRBJgHtnAn1DG07Bbfz3NDVHaRJYq_R8QM85yI1Y/edit?usp=sharing)
 #### Fred Chu, Justin Jianto, Caleb Terrill, Alanna Tran, and Bryan Wong
 
 ## Inspiration
@@ -11,7 +11,7 @@ Thus, the idea of Trinket was born. Trinket is a gamified hiking companion that 
 Trinket has two components: a physical TrinketTracker device and the Trinket website. Bring your TrinketTracker with you on your adventures to log all your data and knock out objectives. Once you complete an objective, you're rewarded with a new Trinket, which levels up and evolves alongside you! On the [Trinket website](https://bryanjwong.github.io/trinket/), you can view your objectives, check out your Trinket collection, and visualize your outdoors adventures.
 
 ## Hardware
-On the hardware side, our HikerHelper IoT device uses the ESP32 microcontroller to communicate with all of our sensors. Once the data is collected, we store it in SD card persistent storage to upload to our Google Firebase realtime database once wifi is re-established.
+On the hardware side, our TrinketTracker IoT device uses the ESP32 microcontroller to communicate with all of our sensors. Once the data is collected, we store it in SD card persistent storage to upload to our Google Firebase realtime database once wifi is re-established.
 
 To implement our backend game logic, we utilized Google Firebase Javascript cloud functions that automatically react to changes in our database. 
 This backend randomly generates user objectives, such as:
@@ -19,7 +19,7 @@ This backend randomly generates user objectives, such as:
 - Explore a particular hiking trail in the area
 - Reach an altitude of 400ft
 
-These objectives are stored in a Firebase realtime database, allowing them to be synced with the HikerHelper. By carrying the HikerHelper with them during their outdoor adventures, users will be able to complete these objectives. The device comes equipped with various sensors, such as accelerometers, GPS modules, humidity, and temp sensors, enabling a diverse set of objectives such that the user experience does not become repetitive. It also comes with an OLED monitor that displays sensor readings, progress towards completing objectives, and cute stylized graphics.
+These objectives are stored in a Firebase realtime database, allowing them to be synced with the TrinketTracker. By carrying the TrinketTracker with them during their outdoor adventures, users will be able to complete these objectives. The device comes equipped with various sensors, such as accelerometers, GPS modules, humidity, and temp sensors, enabling a diverse set of objectives such that the user experience does not become repetitive. It also comes with an OLED monitor that displays sensor readings, progress towards completing objectives, and cute stylized graphics.
 
 Upon completing objectives, users will be rewarded in two ways:
 - New Trinkets added to their collection
@@ -34,7 +34,7 @@ From the objective view, you can view your three active objectives and your prog
 
 Finally, the map view uses the Google Maps API to give us a visual representation of different events, like where we collected our Trinkets or where we completed various objectives.
 
-As mentioned earlier, we used Google Firebase cloud functions to implement all of our backend game logic. This saved much valuable time, as we didn't have to spend time making a true API layer. We created functions that responded to changes in our database, such that the HikerHelper device could trigger them. For example, after the HikerHelper marks an objective as complete, the Firebase function will add it to the list of completed objectives, grant the associated rewards, and replace it with a new objective. Some other Firebase functions we wrote are:
+As mentioned earlier, we used Google Firebase cloud functions to implement all of our backend game logic. This saved much valuable time, as we didn't have to spend time making a true API layer. We created functions that responded to changes in our database, such that the TrinketTracker device could trigger them. For example, after the TrinketTracker marks an objective as complete, the Firebase function will add it to the list of completed objectives, grant the associated rewards, and replace it with a new objective. Some other Firebase functions we wrote are:
 - A function that handles Trinket level-ups and evolving
 - A function that rerolls objectives when pointed to by an HTTP request
 
