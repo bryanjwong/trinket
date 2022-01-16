@@ -5,13 +5,6 @@ import Grid from "@material-ui/core/Grid";
 import { Typography } from "@mui/material";
 import {Button} from "@mui/material";
 
-const Item = styled(Paper)(({ theme }) => ({
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }));
-
 const useStyles = makeStyles({
     root: {
         padding: "10px 50px",

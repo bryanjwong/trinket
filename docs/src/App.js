@@ -12,11 +12,18 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import './App.css';
 
+function importAll(r) {
+  let images = {};
+  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+  return images;
+}
+export const images = importAll(require.context('./images', true, /\.(png|jpe?g|svg|gif)$/));
+
 function App() {
 
   // Use this to change current Page View State
   const [pageState, setPageState] = React.useState(0);
-  const pages = ['Collection', 'Objectives', 'About'];
+  const pages = ['Collection', 'Objectives', 'Map', 'About'];
 
   const [objectives, setObjectives] = React.useState({
     "obj1": { "name": "?" },
@@ -38,6 +45,7 @@ function App() {
     }
   });
   const [activeId, setActiveId] = React.useState(0);
+  const [markers, setMarkers] = React.useState([]);
 
   function loadFirebaseData() {
     get(ref(db, "users/bwong/"))
@@ -51,6 +59,7 @@ function App() {
         }
         setTrinkets(t);
         setActiveId(data.consts.activeId);
+        setMarkers(data.markers);
         console.log(data);
       })
   }
@@ -79,9 +88,9 @@ function App() {
       case 1:
         return (<Objectives objectives={objectives} complObjectives={complObjectives} shuffleObjs={shuffleObjs}/>);
       case 2:
-        return (<About/>);
+        return (<Map isMarkerShown markers={markers} trinkets={trinkets}/>);
       case 3:
-        return (<Map/>);
+        return (<About/>);
     }
   }
 
