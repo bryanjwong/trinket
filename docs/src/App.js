@@ -4,7 +4,7 @@ import Collection from './components/Collection';
 import Objectives from './components/Objectives';
 import './App.css';
 import { db } from "./services/Firebase"
-import { ref, child, get, set } from "firebase/database";
+import { ref, get, set } from "firebase/database";
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';

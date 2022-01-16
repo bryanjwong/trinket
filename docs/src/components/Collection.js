@@ -1,10 +1,8 @@
-import { makeStyles } from "@material-ui/core";
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from "@material-ui/core/Grid";
 import { Typography } from "@mui/material";
 import { Button } from "@mui/material";
+import { makeStyles } from "@material-ui/core";
 
 function importAll(r) {
   let images = {};
@@ -20,7 +18,6 @@ const useStyles = makeStyles({
     marginTop: "20px",
     marginBottom: "20px",
     textAlign: "left",
-    fontFamily: "Roboto",
     fontWeight: "bold",
     fontSize: "26px"
   },
@@ -101,22 +98,13 @@ const useStyles = makeStyles({
     width: "33%",
     visibility: "hidden"
   }
-
 });
-
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-}));
 
 function Collection(props) {
   const classes = useStyles();
   
   var active = props.trinkets[props.activeId];
   var activeImageSrc = images[active.speciesId+"_"+active.evolveLevel+".gif"];
-  console.log(active.speciesId+"_"+active.evolveLevel+".gif");
   var name;
   switch(active.evolveLevel) {
     case 1:
@@ -151,7 +139,6 @@ function Collection(props) {
       while (row.length < 3) {
         row.push(<Button variant="contained" class={classes.invis}></Button>);
       }
-      console.log(row);
       res.push(<div className={classes.altTrinketWrapper}>{row}</div>);
     }
     return res;
@@ -162,7 +149,7 @@ function Collection(props) {
       <Grid container direction="row">
         {/* Header Title */}
         <Grid item lg={6} >
-          <Typography variant="h1" className={classes.title}>My Collection</Typography>
+          <Typography className={classes.title}>My Collection</Typography>
         </Grid>
         <Grid item lg={6}></Grid>
 
