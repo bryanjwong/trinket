@@ -56,6 +56,8 @@ void setup() {
   gpsSerial.begin(9600);
   setup_WIFI();
   setup_firebase();
+  if (!SD.begin(SD_CS))
+    Serial.println("SD initialization failed!");
   int test;
   Firebase.getInt(firebaseData, "/default/test", test);
   Serial.println(test);
@@ -159,7 +161,7 @@ void do_activity(){
   //search for location
   //TODO display searching for location
   bool foundLocation = false;
-  while (1){
+  while (!foundLocation){
     delay(500);
     Serial.println("Searching for location");
     while (gpsSerial.available() > 0){
@@ -171,14 +173,14 @@ void do_activity(){
     }
   }
 
-  //set initial values
+  //set initial reading values
   double distance = 0; //miles
   int steps = 0;
   int duration = 0; //seconds
   double start_alt = gps.altitude.miles(); //miles
   double prev_lat = gps.location.lat();
   double prev_lng = gps.location.lng();
-  float prev_alt = gps.altitude.miles(); //miles
+  float alt = gps.altitude.miles(); //miles
   float currSpeed = gps.speed.mph(); //mph
   unsigned long prev_reading = millis();
   int startYear = gps.date.year();
@@ -188,9 +190,6 @@ void do_activity(){
   int startMinute = gps.time.minute();
   int startSecond = gps.time.second();
   
-  if (!SD.begin(SD_CS))
-    Serial.println("SD initialization failed!");
-
   String activityName = String(gps.date.year());
   activityName += "-" + String(gps.date.month());
   activityName += "-" + String(gps.date.day());
@@ -206,15 +205,13 @@ void do_activity(){
   activityFile = SD.open(activityName, FILE_WRITE);
   
   while (true){
-    //main activity loop
-    
+    //main activity loop  
 
     //check for step update
     bool stepped = false;
     //TODO read mpu6050
     if (stepped)
       steps++;
-    
     
     bool measurement = false; 
     while (gpsSerial.available() > 0){
@@ -223,12 +220,14 @@ void do_activity(){
   
         if (curr - prev_reading >= 1000){ //read every secondish
           //read and log activity data
+          measurement = true;
           double lat = gps.location.lat();
           double lng = gps.location.lng();
-          double alt = gps.altitude.miles();
+          double alt_new = gps.altitude.miles();
           
           double distanceMoved = calc_distance(lat, lng, prev_lat, prev_lng);
-          distanceMoved = sqrt(pow(distanceMoved,2) + pow(alt - prev_alt,2));
+          distanceMoved = sqrt(pow(distanceMoved,2) + pow(alt_new - alt,2));
+          alt = alt_new;
           distance += distanceMoved;
           currSpeed = gps.speed.mph();       
 
@@ -264,14 +263,12 @@ void do_activity(){
           
           prev_lat = lat;
           prev_lng = lng;
-          prev_alt = alt;
           prev_reading = curr;
-        }
-        
+        }       
       }
     }
 
-     //check for button press to update screen or finish
+    //TODO check for button press to update screen or finish
     bool changeScreen = false;
     //make sure to save activity and objectives if finish
 
@@ -280,13 +277,32 @@ void do_activity(){
     int objectiveNum = 0;
     if(hasObjectives && (stepped || measurement)){
       for (int i = 0; i < NUM_OBJECTIVES; i++){
-        bool fitRule = false;
+        if (objectives[i].m_complete)
+          continue;
+          
+        bool fitRule = false;  
         if (objectives[i].m_rule == "day"){
-            String days = objectives[i].m_day; //MTWHFSU
-            //startYear
-            //startMonth
-            //startDay
+            int t [] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+            int startYearTemp = startYear - (startMonth < 3);
+            //0 is Sunday
+            int day = (startYearTemp + startYearTemp/4 - startYearTemp/100 + startYearTemp/400 + t[startMonth-1] + startDay) % 7;
+            char dayChar;
+            switch (day) {
+              case 0: dayChar = 'U'; break;
+              case 1: dayChar = 'M'; break;
+              case 2: dayChar = 'T'; break;
+              case 3: dayChar = 'W'; break;
+              case 4: dayChar = 'H'; break;
+              case 5: dayChar = 'F'; break;
+              default: dayChar = 'S'; break;
+            }
             
+            for (int j = 0; j < objectives[i].m_day.length(); j++){
+              if (objectives[i].m_day[j] == dayChar){
+                fitRule = true;
+                break;
+              }
+            }          
         }
         else if (objectives[i].m_rule == "time"){
           if (startHour >= objectives[i].m_hourLow && startHour < objectives[i].m_hourHigh)
@@ -296,29 +312,49 @@ void do_activity(){
           fitRule = true;
 
         if (fitRule){
-          switch (objectives[i].m_field){
-            case "steps":
-              break;
-            case "altitude":
-              break;
-            case "temperature":
-              break;
-              break;
-            case "duration":
-              break;
-            case "distance":
-            default:
-              break;
+          if (objectives[i].m_field == "steps"){
+            if (float(steps) + objectives[i].m_currVal >= objectives[i].m_goalVal && objectives[i].m_goalCmp){
+              hitObjective = true;
+              objectiveNum = i;
+              objectives[i].m_complete = true;
+              objectives[i].m_currVal = objectives[i].m_goalVal;
+            }
           }
+          else if (objectives[i].m_field == "altitude"){
+            if (alt >= objectives[i].m_goalVal && objectives[i].m_goalCmp == "ge" || alt <= objectives[i].m_goalVal && objectives[i].m_goalCmp == "le"){
+              hitObjective = true;
+              objectiveNum = i;
+              objectives[i].m_complete = true;
+              objectives[i].m_currVal = objectives[i].m_goalVal;
+            }
+          }
+          else if (objectives[i].m_field == "temperature"){
+            
+          }
+          else if (objectives[i].m_field == "duration"){
+            if (float(duration) + objectives[i].m_currVal >= objectives[i].m_goalVal){
+              hitObjective = true;
+              objectiveNum = i;
+              objectives[i].m_complete = true;
+              objectives[i].m_currVal = objectives[i].m_goalVal;
+            }
+          }
+          else if (objectives[i].m_field == "distance"){
+            if (distance + objectives[i].m_currVal >= objectives[i].m_goalVal){
+              hitObjective = true;
+              objectiveNum = i;
+              objectives[i].m_complete = true;
+              objectives[i].m_currVal = objectives[i].m_goalVal;
+            }            
+          }          
         }
       }
-      
-      if (hitObjective)
-        write_objectives(OBJECTIVES_FILE, objectives);
     }
     
-    if (hitObjective){
-      //show some fun screen for hitting objective
+    if (hitObjective){            
+      write_objectives(OBJECTIVES_FILE, objectives);
+      
+      //TODO show some fun screen for hitting objective
     }
     else if (stepped || measurement || changeScreen){
       //update screen  
@@ -365,6 +401,8 @@ void sync(){
             activityStr += activityFile.read();
           
           Firebase.setString(firebaseData, FIREBASE_ACTIVITY_PATH + activityName, activityStr);
+          activityFile.close();
+          SD.remove(activityName);
         }
         else
           Serial.println("File activity to sync does not exist");
@@ -430,8 +468,7 @@ void sync(){
     objectives_new[i].m_currVal = f;
   }
 
-  write_objectives(OBJECTIVES_FILE, objectives_new);
-  
+  write_objectives(OBJECTIVES_FILE, objectives_new);  
 }
 
 bool read_objectives(String filename, Objective *objectives){
@@ -446,13 +483,13 @@ bool read_objectives(String filename, Objective *objectives){
 
   String items[NUM_OBJECTIVES*NUM_OBJECTIVES_FIELDS];
   int index = 0;
-  for(int i = 0; i < NUM_OBJECTIVES*NUM_OBJECTIVES_FIELDS; i++){
+  for(int i = 0; i < NUM_OBJECTIVES*NUM_OBJECTIVES_FIELDS; i++, index++){
     String s;
     while (str[index] != ','){
       s += str[index];
       index++;
     }
-    index++;
+    items[i] = s;
   }
 
   for(int i = 0; i < NUM_OBJECTIVES; i++){
