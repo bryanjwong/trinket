@@ -23,6 +23,8 @@ function App() {
       "name2": "?",
       "name3": "?",
       "level": 1,
+      "evolveLevel": 1,
+      "speciesId": 0,
       "objText": "?",
       "totalSteps": 0,
       "totalDuration": 0,

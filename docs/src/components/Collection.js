@@ -3,9 +3,16 @@ import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from "@material-ui/core/Grid";
-import peb from '../images/peb_1.png';
 import { Typography } from "@mui/material";
 import {Button} from "@mui/material";
+import peb from '../images/0_1.png'
+
+function importAll(r) {
+  let images = {};
+  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+  return images;
+}
+const images = importAll(require.context('../images', true, /\.(png|jpe?g|svg|gif)$/));
 
 const useStyles = makeStyles({
   title: {
@@ -105,6 +112,8 @@ function Collection(props) {
   const classes = useStyles();
   
   var active = props.trinkets[props.activeId];
+  var activeImageSrc = images[active.speciesId+"_"+active.evolveLevel+".gif"];
+  console.log(active.speciesId+"_"+active.evolveLevel+".gif");
   var name;
   switch(active.evolveLevel) {
     case 1:
@@ -124,11 +133,12 @@ function Collection(props) {
     var res = [];
     var row = [];
     for (const [id, v] of Object.entries(props.trinkets)) {
+      var altImageSrc = images[v.speciesId+"_"+v.evolveLevel+".png"];
       row.push((id === props.activeId) ? 
          <Button variant="contained" class={classes.altTrinketActive}
-                 startIcon={<img src={peb} className={classes.altTrinketPic}/>}></Button> 
+                 startIcon={<img src={altImageSrc} className={classes.altTrinketPic}/>}></Button> 
         : <Button variant="contained" class={classes.altTrinket} onClick={() => props.swapActiveId(id)}
-                  startIcon={<img src={peb} className={classes.altTrinketPic}/>}></Button>);
+                  startIcon={<img src={altImageSrc} className={classes.altTrinketPic}/>}></Button>);
       if (row.length === 3) {
         res.push(<div className={classes.altTrinketWrapper}>{row}</div>);
         row = [];
@@ -156,7 +166,7 @@ function Collection(props) {
         {/* Active Trinket Image */}
         
         <Grid item lg={4} className={classes.wrapper}>
-          <img src={peb} className={classes.activeTrinket}/>
+          <img src={activeImageSrc} className={classes.activeTrinket}/>
         </Grid>
         
         {/* Adding the the current Trinket Description and stats */}
