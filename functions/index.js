@@ -94,6 +94,13 @@ exports.getNewObjs = functions.database.ref("/users/{usr}/objectives")
     return Promise.all(promises);
   });
 
+exports.shuffleObjs = functions.https.onRequest(async (req, res) => {
+  await admin.database().ref("/users/bwong/objectives/obj1").set(getRandomObjective());
+  await admin.database().ref("/users/bwong/objectives/obj2").set(getRandomObjective());
+  await admin.database().ref("/users/bwong/objectives/obj3").set(getRandomObjective());
+  res.json({result: "Objectives successfully shuffled."});
+});
+
 exports.handleTrinketLevelUp = functions.database.ref("/users/{usr}/trinkets/{tid}")
   .onWrite((change, context) => {
     var obj = change.after.val();
