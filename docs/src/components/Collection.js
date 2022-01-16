@@ -8,6 +8,12 @@ import { Typography } from "@mui/material";
 import {Button} from "@mui/material";
 
 const useStyles = makeStyles({
+  title: {
+    paddingLeft: "20px",
+    marginLeft: "20px",
+    textAlign: "left"
+  },
+
   collection: {
     marginTop: "25px",
     height: "100%"
@@ -18,16 +24,13 @@ const useStyles = makeStyles({
     display: "flex"
   },
   activeTrinket: {
+    marginLeft: "20px",
     width: "100%",
     borderRadius: "25px",
   },
 
   activeText: {
     width: "100%",
-  },
-
-  title: {
-    textAlign: "left"
   },
 
   fields: {
@@ -46,18 +49,31 @@ const useStyles = makeStyles({
     backgroundColor: "grey",
     borderRadius: "25px",
   },
+  name: {
+    textAlign: "left"
+  },
 
   altTrinket: {
     width: "33%",
-    borderRadius: "25px",
+    padding: "25px",
+    backgroundColor: "transparent",
+    border: 0,
+  },
+
+  altTrinketActive: {
+    width: "33%",
+    padding: "25px",
+    borderRadius: "10px",
+    border: 0
   },
 
   altTrinketPic: {
     width: "100%",
-    borderRadius: "25px",
+    borderRadius: "10px",
   },
 
   scrollbox: {
+    marginRight: "20px",
     padding: "20px",
     backgroundColor: "grey",
     borderRadius: "25px",
@@ -103,8 +119,11 @@ function Collection(props) {
     var res = [];
     var row = [];
     for (const [id, v] of Object.entries(props.trinkets)) {
-      row.push(<Button variant="contained" class={classes.altTrinket} onClick={() => props.swapActiveId(id)}
-                         startIcon={<img src={peb} className={classes.altTrinketPic}/>}></Button>);
+      row.push((id === props.activeId) ? 
+         <Button variant="contained" class={classes.altTrinketActive}
+                 startIcon={<img src={peb} className={classes.altTrinketPic}/>}></Button> 
+        : <Button variant="contained" class={classes.altTrinket} onClick={() => props.swapActiveId(id)}
+                  startIcon={<img src={peb} className={classes.altTrinketPic}/>}></Button>);
       if (row.length === 3) {
         res.push(<div className={classes.altTrinketWrapper}>{row}</div>);
         row = [];
@@ -137,7 +156,7 @@ function Collection(props) {
         <Grid item lg={3} className={classes.wrapper}>
           
           <Grid item className={classes.textbox}>
-            <Typography variant="h3" className={classes.title}>{name}</Typography>
+            <Typography variant="h3" className={classes.name}>{name}</Typography>
             <Typography className={classes.fields}>Completed Objective:</Typography>
             <Typography className={classes.values}>{active.objName}</Typography><br />
             <Typography className={classes.fields}>Level:</Typography>
