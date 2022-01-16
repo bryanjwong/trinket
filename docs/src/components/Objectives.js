@@ -11,7 +11,6 @@ const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
-    justifyContent: "center",
     color: theme.palette.text.secondary,
   }));
 
@@ -28,6 +27,10 @@ const useStyles = makeStyles({
         verticalAlign: "middle",
         height: "25vh",
         borderRadius: "30px",
+        fontFamily: "Roboto",
+        fontSize: "100%",
+        padding: "0px 50px 0px 50px",
+        maxWidth: "250px"
     },
     completedObjectives: {
         display: "flex",
@@ -36,7 +39,11 @@ const useStyles = makeStyles({
         textAlign: "center",
         verticalAlign: "middle",
         height: "8vh",
-        borderRadius: "30px"
+        borderRadius: "30px",
+        fontFamily: "Roboto",
+        fontSize: "100%",
+        padding: "0px 50px 0px 50px",
+        maxWidth: "300px"
     },
     title: {
         textAlign: "left",
@@ -67,7 +74,7 @@ function Collection() {
 
         <Grid container spacing={6} className={classes.root}>
             <Grid item lg={3} >
-                <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
+                <Paper className={classes.activeObjectives}>Walk 5000 Steps, dub dub dub dub</Paper>
             </Grid>
             <Grid item lg={3}>
                 <Paper className={classes.activeObjectives}>Walk 5000 Steps</Paper>
