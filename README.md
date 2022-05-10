@@ -1,5 +1,5 @@
 # Trinket
-### [Website](https://bryanjwong.github.io/trinket/) | [Demo Video] (https://youtu.be/ETAP34A5Hy8) | [Devpost](https://devpost.com/software/trinket) | [Slide Deck](https://docs.google.com/presentation/d/1jQ3DRBJgHtnAn1DG07Bbfz3NDVHaRJYq_R8QM85yI1Y/edit?usp=sharing)
+### [Website](https://bryanjwong.github.io/trinket/) | [Demo Video](https://youtu.be/ETAP34A5Hy8) | [Devpost](https://devpost.com/software/trinket) | [Slide Deck](https://docs.google.com/presentation/d/1jQ3DRBJgHtnAn1DG07Bbfz3NDVHaRJYq_R8QM85yI1Y/edit?usp=sharing)
 #### Fred Chu, Justin Jianto, Caleb Terrill, Alanna Tran, and Bryan Wong
 
 ## Inspiration
